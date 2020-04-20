@@ -82,7 +82,7 @@ FetchContent_GetProperties(catch2)
 if(NOT catch2_POPULATED)
     FetchContent_Populate(catch2)
     # This is overkill since we only need a single file. Though it is a clean solution.
-    add_library(catch2 src/car.cc include/mylibrary/car.h)
+    add_library(catch2 src/car.cc include/mylibrary/car.h src/location.cc include/mylibrary/location.h include/mylibrary/direction.h)
     target_include_directories(catch2 INTERFACE ${catch2_SOURCE_DIR}/single_include)
 endif()
 

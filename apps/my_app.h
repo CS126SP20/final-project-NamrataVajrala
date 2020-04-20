@@ -4,13 +4,17 @@
 #define FINALPROJECT_APPS_MYAPP_H_
 
 #include <cinder/app/App.h>
+#include <mylibrary/crosser.h>
 
 
 namespace myapp {
 
+const int ktile_size = 50;
+
 class MyApp : public cinder::app::App {
  private:
-  int tile_size_;
+  mylibrary::Crosser crosser_;
+
  public:
   MyApp();
   void setup() override;
