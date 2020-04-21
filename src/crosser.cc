@@ -8,11 +8,10 @@ Crosser::Crosser() : location_{Location(375, 750)} {}
 
 Location Crosser::GetLocation() { return location_; }
 
+//problem: isn't binded to board size fix later
 void Crosser::Move(Direction dir) {
-  Location other_vertical = Location(0,50);
-  Location other_horiz = Location(50,0);
-  Location left_top_bound = Location(0, 0);
-  Location right_bottom_bound = Location(kWidth, kHeight);
+  Location other_vertical = Location(0,ktile_size);
+  Location other_horiz = Location(ktile_size,0);
 
   Location prev_location = location_;
 
@@ -28,9 +27,13 @@ void Crosser::Move(Direction dir) {
   if (dir == Direction::kLeft) {
     location_ = location_ - other_horiz;
   }
-  if (!(location_ > left_top_bound) || !(location_ < right_bottom_bound)) {
+  if (!(location_.Row() > 0 && location_.Row() < kWidth) ||
+      !(location_.Col() > 0 && location_.Col() < kHeight)) {
     location_ = prev_location;
   }
+//  if (!(location_ > left_top_bound) || !(location_ < right_bottom_bound)) {
+//    location_ = prev_location;
+//  }
 }
 
 }  // namespace mylibrary

@@ -10,22 +10,25 @@
 #include <cinder/gl/draw.h>
 #include <cinder/gl/gl.h>
 //#include <gflags/gflags.h>
-#include "cinder/gl/Texture.h"
 
-#include "cinder/audio/audio.h"
-#include "cinder/audio/Source.h"
-#include "cinder/audio/SamplePlayerNode.h"
-
-#include <mylibrary/location.h>
 #include <mylibrary/direction.h>
+#include <mylibrary/location.h>
 
 #include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <string>
+#include <vector>
+
+#include "cinder/audio/SamplePlayerNode.h"
+#include "cinder/audio/Source.h"
+#include "cinder/audio/audio.h"
+#include "cinder/gl/Texture.h"
+#include "mylibrary/lane.h"
 namespace myapp {
 cinder::gl::Texture2dRef mTex;
 cinder::gl::Texture2dRef mTexBack;
+cinder::gl::Texture2dRef mTexBlocker;
 
 
 using cinder::app::KeyEvent;
@@ -34,12 +37,20 @@ MyApp::MyApp() {
 }
 
 void MyApp::setup() {
+  int num_of_obstacles[knumber_lanes] = {0, 2, 3, 4, 3, 1, 5, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
+  int width[knumber_lanes] = {0, 200, 100, 50, 100, 300, 50, 200, 100, 200, 50, 100, 200, 50, 300, 0 };
+  int speed[knumber_lanes] = {0, 2, 3, 20, 3, 15, 5, 2, 3, 10, 4, 3, 9, 5, 10, 0 };
 
+  for (int i = 0; i < knumber_lanes; i++) {
+    mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i]);
+    lanes_.push_back(lane);
+  }
 }
 
 void MyApp::update() {
   cinder::gl::clear();
   draw();
+  
 }
 
 void MyApp::draw() {
@@ -50,8 +61,13 @@ void MyApp::draw() {
 
   //draw crosser
   drawCrosser();
+
+  //draw all blockers
+  drawBlocker();
+
 }
 
+//problem: pause and reset game functionality
 void MyApp::keyDown(KeyEvent event) {
   switch (event.getCode()) {
     case KeyEvent::KEY_UP:
@@ -78,20 +94,6 @@ void MyApp::keyDown(KeyEvent event) {
       crosser_.Move(mylibrary::Direction::kRight);
       break;
     }
-//    case KeyEvent::KEY_p: {
-//      paused_ = !paused_;
-//
-//      if (paused_) {
-//        last_pause_time_ = system_clock::now();
-//      } else {
-//        last_intact_time_ += system_clock::now() - last_pause_time_;
-//      }
-//      break;
-//    }
-//    case KeyEvent::KEY_r: {
-//      ResetGame();
-//      break;
-//    }
   }
 }
 
@@ -103,6 +105,35 @@ void MyApp::drawCrosser() {
   cinder::gl::draw( mTex, cinder::Rectf(loc.Row(), loc.Col(),
       loc.Row() + ktile_size,
       loc.Col() + ktile_size));
+}
+
+void MyApp::drawBlocker() {
+  //intialize vector
+  std::vector<std::string> blocker_images;
+
+  for (int i = 0; i < lanes_.size(); i++) {
+    //set images for lane
+    auto img_blocker = loadImage(cinder::app::loadAsset("hand-drawn-rounded-rectangle-rubber-stamp-hand-drawn-border-11563533358gjigxkjksg.png") );
+    mTexBlocker = cinder::gl::Texture2d::create( img_blocker );
+
+    //set initial x locations
+    int x_new = 0;
+    std::vector<mylibrary::Blocker> blockers = lanes_[i].GetBlockersVector();
+
+    for (mylibrary::Blocker blocker: blockers) {
+      mylibrary::Location loc_top = blocker.GetLocation();
+
+      cinder::gl::draw( mTexBlocker, cinder::Rectf(loc_top.Row(), loc_top.Col(),
+                                                   loc_top.Row() + lanes_[i].GetWidth(),
+                                                   loc_top.Col() + ktile_size));
+//      x_new = x_new + lanes[i].GetSpeed();
+//      mylibrary::Location loc_new = mylibrary::Location(x_new, loc_top.Col());
+//      blocker.SetLocation(loc_new);
+//      cinder::gl::draw( mTexBlocker, cinder::Rectf(loc_new.Row(), loc_new.Col(),
+//                                            loc_new.Row() + lanes[i].GetWidth(),
+//                                            loc_top.Col() + ktile_size));
+    }
+  }
 }
 
 }  // namespace myapp

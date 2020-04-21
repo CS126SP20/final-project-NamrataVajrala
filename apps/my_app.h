@@ -5,15 +5,18 @@
 
 #include <cinder/app/App.h>
 #include <mylibrary/crosser.h>
+#include "mylibrary/lane.h"
 
 
 namespace myapp {
 
 const int ktile_size = 50;
+const int knumber_lanes = 16;
 
 class MyApp : public cinder::app::App {
  private:
   mylibrary::Crosser crosser_;
+  std::vector<mylibrary::Lane> lanes_;
 
  public:
   MyApp();
@@ -22,6 +25,7 @@ class MyApp : public cinder::app::App {
   void draw() override;
   void keyDown(cinder::app::KeyEvent) override;
   void drawCrosser();
+  void drawBlocker();
 };
 
 }  // namespace myapp
