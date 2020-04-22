@@ -7,6 +7,15 @@ namespace mylibrary {
 Crosser::Crosser() : location_{Location(375, 750)} {}
 
 Location Crosser::GetLocation() { return location_; }
+void Crosser::SetLocation(Location loc) { location_= loc; }
+
+bool Crosser::DoesIntersect(int x_one, int y_one, int x_two, int y_two) {
+  int this_x_one = location_.Row();
+  int this_y_one = location_.Col();
+  int this_x_two = location_.Row() + ktile_size;
+  int this_y_two = location_.Col() + ktile_size;
+  return (!(this_x_one >= x_two || this_x_two <= x_one || this_y_one >= y_two || this_y_two <= y_two));
+}
 
 //problem: isn't binded to board size fix later
 void Crosser::Move(Direction dir) {

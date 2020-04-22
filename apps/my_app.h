@@ -17,6 +17,7 @@ class MyApp : public cinder::app::App {
  private:
   mylibrary::Crosser crosser_;
   std::vector<mylibrary::Lane> lanes_;
+  std::vector<mylibrary::Blocker *>& blockers_vect_;
 
  public:
   MyApp();
@@ -26,6 +27,7 @@ class MyApp : public cinder::app::App {
   void keyDown(cinder::app::KeyEvent) override;
   void drawCrosser();
   void drawBlocker();
+  void Reset();
 };
 
 }  // namespace myapp

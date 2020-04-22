@@ -10,6 +10,7 @@
 #include <cinder/gl/draw.h>
 #include <cinder/gl/gl.h>
 //#include <gflags/gflags.h>
+#include "imgui.h"
 
 #include <mylibrary/direction.h>
 #include <mylibrary/location.h>
@@ -33,7 +34,7 @@ cinder::gl::Texture2dRef mTexBlocker;
 
 using cinder::app::KeyEvent;
 
-MyApp::MyApp() {
+MyApp::MyApp() : blockers_vect_(blockers_vect_) {
 }
 
 void MyApp::setup() {
@@ -42,15 +43,17 @@ void MyApp::setup() {
   int speed[knumber_lanes] = {0, 2, 3, 20, 3, 15, 5, 2, 3, 10, 4, 3, 9, 5, 10, 0 };
 
   for (int i = 0; i < knumber_lanes; i++) {
-    mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i]);
+    //mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i]);
+    mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i], blockers_vect_);
     lanes_.push_back(lane);
   }
+  ImGui::Text("Crossy Road", 123);
 }
 
 void MyApp::update() {
   cinder::gl::clear();
   draw();
-  
+
 }
 
 void MyApp::draw() {
@@ -98,9 +101,23 @@ void MyApp::keyDown(KeyEvent event) {
 }
 
 void MyApp::drawCrosser() {
+  //set an image for crosser
   auto img_crosser = loadImage(cinder::app::loadAsset( "f3a453e988c557182b5494a3ac794d92.png" ) );
   mTex = cinder::gl::Texture2d::create( img_crosser );
 
+//  //check if crosser hits any of the blocks
+//  for (mylibrary::Lane l : lanes_) {
+//    for (mylibrary::Blocker b : l.GetBlockersVector()) {
+//      if (crosser_.DoesIntersect(b.GetLocation().Row(),
+//          b.GetLocation().Col(),
+//          b.GetLocation().Row() + l.GetWidth(),
+//          b.GetLocation().Col() + ktile_size)) {
+//        Reset();
+//      }
+//    }
+//  }
+
+  //set crossers location and draw
   mylibrary::Location loc = crosser_.GetLocation();
   cinder::gl::draw( mTex, cinder::Rectf(loc.Row(), loc.Col(),
       loc.Row() + ktile_size,
@@ -118,10 +135,14 @@ void MyApp::drawBlocker() {
 
     //set initial x locations
     int x_new = 0;
-    std::vector<mylibrary::Blocker> blockers = lanes_[i].GetBlockersVector();
+    //std::vector<mylibrary::Blocker> &blockers = lanes_[i].GetBlockersVector();
+    blockers_vect_ = lanes_[i].GetBlockersVector();
 
-    for (mylibrary::Blocker blocker: blockers) {
-      mylibrary::Location loc_top = blocker.GetLocation();
+    //for (mylibrary::Blocker &blocker: blockers) {
+    for (int j = 0; j < lanes_[i].GetNumBlockers(); j++) {
+      blockers_vect_.at(j)->MoveBlocker();
+      mylibrary::Location loc_top = blockers_vect_.at(j)->GetLocation();
+
 
       cinder::gl::draw( mTexBlocker, cinder::Rectf(loc_top.Row(), loc_top.Col(),
                                                    loc_top.Row() + lanes_[i].GetWidth(),
@@ -134,6 +155,10 @@ void MyApp::drawBlocker() {
 //                                            loc_top.Col() + ktile_size));
     }
   }
+}
+
+void MyApp::Reset() {
+  crosser_.SetLocation(mylibrary::Location(375, 750));
 }
 
 }  // namespace myapp
