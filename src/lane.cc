@@ -43,14 +43,11 @@ int Lane::GetSpeed() {
   return speed_;
 }
 
-int Lane::GetNumBlockers() { return num_blockers_;
+int Lane::GetNumBlockers() {
+  return num_blockers_;
 }
 
 void Lane::MoveLane() {
-  //std::vector<mylibrary::Blocker> blockers_list = GetBlockersVector();
-  //for (Blocker blocker: blockers_list) {
-  //blocker.MoveBlocker();
-  // }
   for (int i = 0; i < num_blockers_; i++) {
     blockers_vector_.at(i)->MoveBlocker();
   }

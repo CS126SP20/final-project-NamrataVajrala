@@ -48,15 +48,6 @@ void MyApp::setup() {
     mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i], blockers_vector_);
     lanes_.push_back(lane);
   }
-//  int num_of_obstacles[knumber_lanes] = {0, 2, 3, 4, 3, 1, 5, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
-//  int width[knumber_lanes] = {0, 200, 100, 50, 100, 300, 50, 200, 100, 200, 50, 100, 200, 50, 300, 0 };
-//  int speed[knumber_lanes] = {0, 2, 3, 20, 3, 15, 5, 2, 3, 10, 4, 3, 9, 5, 10, 0 };
-//
-//  for (int i = 0; i < knumber_lanes; i++) {
-//    //mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i]);
-//    mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i]);
-//    lanes_.push_back(lane);
-//  }
   //ImGui::Text("Crossy Road", 123);
 }
 
@@ -142,22 +133,16 @@ void MyApp::drawBlocker() {
   //intialize vector
   std::vector<std::string> blocker_images;
 
-
   for (int i = 0; i < lanes_.size(); i++) {
     //set images for lane
-    auto img_blocker = loadImage(cinder::app::loadAsset("hand-drawn-rounded-rectangle-rubber-stamp-hand-drawn-border-11563533358gjigxkjksg.png") );
+    auto img_blocker = loadImage(cinder::app::loadAsset("volleyball-game-sports-court-play-512.png") );
     mTexBlocker = cinder::gl::Texture2d::create( img_blocker );
-
-    //set initial x locations
-    int x_new = 0;
 
     blockers_vector_ = lanes_[i].GetBlockersVector();
 
     for (int j = 0; j < lanes_[i].GetNumBlockers(); j++) {
       blockers_vector_.at(j)->MoveBlocker();
       mylibrary::Location loc_top = blockers_vector_.at(j)->GetLocation();
-
-
       cinder::gl::draw( mTexBlocker, cinder::Rectf(loc_top.Row(), loc_top.Col(),
                                                    loc_top.Row() + lanes_[i].GetWidth(),
                                                    loc_top.Col() + ktile_size));

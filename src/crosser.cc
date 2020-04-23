@@ -40,9 +40,6 @@ void Crosser::Move(Direction dir) {
       !(location_.Col() > 0 && location_.Col() < kHeight)) {
     location_ = prev_location;
   }
-//  if (!(location_ > left_top_bound) || !(location_ < right_bottom_bound)) {
-//    location_ = prev_location;
-//  }
 }
 
 }  // namespace mylibrary

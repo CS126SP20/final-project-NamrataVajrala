@@ -11,8 +11,6 @@ Blocker::Blocker(int x, int y, int speed, int w) : location_{Location(x, y)} {
   y_loc_ = y;
   speed_blocker_ = speed;
   width__blocker = w;
-//  width_ = w;
-//  height_ = h;
 }
 
 Location Blocker::GetLocation() { return location_; }
