@@ -34,7 +34,8 @@ cinder::gl::Texture2dRef mTexBlocker;
 
 using cinder::app::KeyEvent;
 
-MyApp::MyApp() : blockers_vect_(blockers_vect_) {
+MyApp::MyApp() {
+
 }
 
 void MyApp::setup() {
@@ -44,10 +45,19 @@ void MyApp::setup() {
 
   for (int i = 0; i < knumber_lanes; i++) {
     //mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i]);
-    mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i], blockers_vect_);
+    mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i], blockers_vector_);
     lanes_.push_back(lane);
   }
-  ImGui::Text("Crossy Road", 123);
+//  int num_of_obstacles[knumber_lanes] = {0, 2, 3, 4, 3, 1, 5, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
+//  int width[knumber_lanes] = {0, 200, 100, 50, 100, 300, 50, 200, 100, 200, 50, 100, 200, 50, 300, 0 };
+//  int speed[knumber_lanes] = {0, 2, 3, 20, 3, 15, 5, 2, 3, 10, 4, 3, 9, 5, 10, 0 };
+//
+//  for (int i = 0; i < knumber_lanes; i++) {
+//    //mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i]);
+//    mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i]);
+//    lanes_.push_back(lane);
+//  }
+  //ImGui::Text("Crossy Road", 123);
 }
 
 void MyApp::update() {
@@ -105,17 +115,21 @@ void MyApp::drawCrosser() {
   auto img_crosser = loadImage(cinder::app::loadAsset( "f3a453e988c557182b5494a3ac794d92.png" ) );
   mTex = cinder::gl::Texture2d::create( img_crosser );
 
-//  //check if crosser hits any of the blocks
-//  for (mylibrary::Lane l : lanes_) {
-//    for (mylibrary::Blocker b : l.GetBlockersVector()) {
-//      if (crosser_.DoesIntersect(b.GetLocation().Row(),
-//          b.GetLocation().Col(),
-//          b.GetLocation().Row() + l.GetWidth(),
-//          b.GetLocation().Col() + ktile_size)) {
-//        Reset();
-//      }
-//    }
-//  }
+  std::vector<mylibrary::Blocker *> blockers_vect;
+  //check if crosser hits any of the blocks
+  for (mylibrary::Lane l : lanes_) {
+    blockers_vect = l.GetBlockersVector();
+    for (int i = 0; i < l.GetNumBlockers(); i++) {
+      mylibrary::Location loc = (blockers_vect.at(i))->GetLocation();
+      if (crosser_.DoesIntersect(loc.Row(),
+          loc.Col(),
+          loc.Row() + l.GetWidth(),
+          loc.Col() + ktile_size)) {
+        Reset();
+      }
+    }
+    blockers_vect.clear();
+  }
 
   //set crossers location and draw
   mylibrary::Location loc = crosser_.GetLocation();
@@ -128,6 +142,7 @@ void MyApp::drawBlocker() {
   //intialize vector
   std::vector<std::string> blocker_images;
 
+
   for (int i = 0; i < lanes_.size(); i++) {
     //set images for lane
     auto img_blocker = loadImage(cinder::app::loadAsset("hand-drawn-rounded-rectangle-rubber-stamp-hand-drawn-border-11563533358gjigxkjksg.png") );
@@ -135,25 +150,19 @@ void MyApp::drawBlocker() {
 
     //set initial x locations
     int x_new = 0;
-    //std::vector<mylibrary::Blocker> &blockers = lanes_[i].GetBlockersVector();
-    blockers_vect_ = lanes_[i].GetBlockersVector();
 
-    //for (mylibrary::Blocker &blocker: blockers) {
+    blockers_vector_ = lanes_[i].GetBlockersVector();
+
     for (int j = 0; j < lanes_[i].GetNumBlockers(); j++) {
-      blockers_vect_.at(j)->MoveBlocker();
-      mylibrary::Location loc_top = blockers_vect_.at(j)->GetLocation();
+      blockers_vector_.at(j)->MoveBlocker();
+      mylibrary::Location loc_top = blockers_vector_.at(j)->GetLocation();
 
 
       cinder::gl::draw( mTexBlocker, cinder::Rectf(loc_top.Row(), loc_top.Col(),
                                                    loc_top.Row() + lanes_[i].GetWidth(),
                                                    loc_top.Col() + ktile_size));
-//      x_new = x_new + lanes[i].GetSpeed();
-//      mylibrary::Location loc_new = mylibrary::Location(x_new, loc_top.Col());
-//      blocker.SetLocation(loc_new);
-//      cinder::gl::draw( mTexBlocker, cinder::Rectf(loc_new.Row(), loc_new.Col(),
-//                                            loc_new.Row() + lanes[i].GetWidth(),
-//                                            loc_top.Col() + ktile_size));
     }
+    blockers_vector_.clear();
   }
 }
 

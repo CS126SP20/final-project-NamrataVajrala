@@ -17,7 +17,7 @@ class MyApp : public cinder::app::App {
  private:
   mylibrary::Crosser crosser_;
   std::vector<mylibrary::Lane> lanes_;
-  std::vector<mylibrary::Blocker *>& blockers_vect_;
+  std::vector<mylibrary::Blocker *> blockers_vector_;
 
  public:
   MyApp();

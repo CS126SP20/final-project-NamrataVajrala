@@ -10,13 +10,12 @@
 
 namespace mylibrary {
 
-Lane::Lane(int blockers_num, int width, int lane_num, int lane_speed, std::vector<mylibrary::Blocker *>& blockers) : blockers_vector_(blockers) {
+Lane::Lane(int blockers_num, int width, int lane_num, int lane_speed, std::vector<mylibrary::Blocker *>& blockers) {
   num_blockers_ = blockers_num;
   width_ = width;
-
   lane_number_ = lane_num;
   speed_ = lane_speed;
-  blockers_vector_ = std::move(blockers);
+  blockers_vector_ = blockers;
 //  FillBlockersVector();
 
 }
