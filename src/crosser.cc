@@ -1,6 +1,7 @@
 // Copyright (c) 2020 [Your Name]. All rights reserved.
 
 #include <mylibrary/crosser.h>
+//#include <sqlite_modern_cpp.h>
 
 namespace mylibrary {
 
@@ -36,10 +37,17 @@ void Crosser::Move(Direction dir) {
   if (dir == Direction::kLeft) {
     location_ = location_ - other_horiz;
   }
-  if (!(location_.Row() > 0 && location_.Row() < kWidth) ||
-      !(location_.Col() > 0 && location_.Col() < kHeight)) {
+  if (!(location_.Row() > 0 && location_.Row() < kWidth - 25) ||
+      !(location_.Col() > -ktile_size && location_.Col() < kHeight)) {
     location_ = prev_location;
   }
+}
+
+bool Crosser::IsInWinningPosition() {
+  if (location_.Col() <= 0) {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace mylibrary

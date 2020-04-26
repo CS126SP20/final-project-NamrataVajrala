@@ -70,6 +70,13 @@ add_subdirectory(tests)
 
 ############## Third-party Libraries #####################
 
+# Database library
+FetchContent_Declare(
+        sqlite-modern-cpp
+        GIT_REPOSITORY https://github.com/SqliteModernCpp/sqlite_modern_cpp.git
+        GIT_TAG a0f96c10f04d96ccea1b8a49d5998c96e7887bf4
+)
+
 # Testing library. Header-only.
 FetchContent_Declare(
     catch2
@@ -77,12 +84,20 @@ FetchContent_Declare(
     GIT_TAG        v2.11.1
 )
 
+# Adds sqlite_modern_cpp.
+FetchContent_GetProperties(sqlite-modern-cpp)
+if (NOT sqlite-modern-cpp_POPULATED)
+    FetchContent_Populate(sqlite-modern-cpp)
+    add_library(sqlite-modern-cpp INTERFACE)
+    target_include_directories(sqlite-modern-cpp INTERFACE ${sqlite-modern-cpp_SOURCE_DIR}/hdr)
+endif ()
+
 # Adds catch2 library. This is a header only library.
 FetchContent_GetProperties(catch2)
 if(NOT catch2_POPULATED)
     FetchContent_Populate(catch2)
     # This is overkill since we only need a single file. Though it is a clean solution.
-    add_library(catch2 src/blocker.cc include/mylibrary/blocker.h src/location.cc include/mylibrary/location.h include/mylibrary/direction.h src/lane.cc include/mylibrary/lane.h)
+    add_library(catch2 src/blocker.cc include/mylibrary/blocker.h src/location.cc include/mylibrary/location.h include/mylibrary/direction.h src/lane.cc include/mylibrary/lane.h src/ScoreBoard.cpp include/mylibrary/ScoreBoard.h include/mylibrary/person.h)
     target_include_directories(catch2 INTERFACE ${catch2_SOURCE_DIR}/single_include)
 endif()
 

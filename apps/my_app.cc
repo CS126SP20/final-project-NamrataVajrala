@@ -11,6 +11,12 @@
 #include <cinder/gl/gl.h>
 //#include <gflags/gflags.h>
 #include "imgui.h"
+#include "mylibrary/person.h"
+
+
+using cinder::Color;
+using cinder::ColorA;
+using cinder::TextBox;
 
 #include <mylibrary/direction.h>
 #include <mylibrary/location.h>
@@ -30,25 +36,33 @@ namespace myapp {
 cinder::gl::Texture2dRef mTex;
 cinder::gl::Texture2dRef mTexBack;
 cinder::gl::Texture2dRef mTexBlocker;
+cinder::gl::Texture2dRef mTexWin;
+cinder::gl::Texture2dRef mTexWinTwo;
+cinder::gl::Texture2dRef mTexlose;
+cinder::gl::Texture2dRef mTexloseTwo;
+
+//const char kDbPath[] = "identifier.db";
 
 
 using cinder::app::KeyEvent;
-
+//: scoreboard_(cinder::app::getAssetPath(kDbPath).string())
 MyApp::MyApp() {
 
 }
 
 void MyApp::setup() {
-  int num_of_obstacles[knumber_lanes] = {0, 2, 3, 4, 3, 1, 5, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
+  isWinner_ = false;
+  isGameOver_ = false;
+  score_ = 100;
+  //int num_of_obstacles[knumber_lanes] = {0, 2, 3, 4, 3, 1, 5, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
+  int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   int width[knumber_lanes] = {0, 200, 100, 50, 100, 300, 50, 200, 100, 200, 50, 100, 200, 50, 300, 0 };
-  int speed[knumber_lanes] = {0, 2, 3, 20, 3, 15, 5, 2, 3, 10, 4, 3, 9, 5, 10, 0 };
+  int speed[knumber_lanes] = {0, 2, 3, 5, 3, 6, 5, 2, 10, 10, 4, 3, 9, 5, 10, 0 };
 
   for (int i = 0; i < knumber_lanes; i++) {
-    //mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i]);
     mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i], blockers_vector_);
     lanes_.push_back(lane);
   }
-  //ImGui::Text("Crossy Road", 123);
 }
 
 void MyApp::update() {
@@ -58,6 +72,24 @@ void MyApp::update() {
 }
 
 void MyApp::draw() {
+
+  if (isGameOver_) {
+//    if (winners_.empty()) {
+//      scoreboard_.AddScore({name_,static_cast<size_t>( score_)});
+//      winners_ = scoreboard_.RetrieveHighScores(3);
+//      assert(!winners_.empty());
+//    }
+    cinder::gl::clear(Color(
+        1, 0, 0));
+    if (isWinner_) {
+      drawWinScreen();
+      return;
+    } else {
+      drawLoseScreen();
+      return;
+    }
+  }
+
   //draw background
   auto img_crosser_back = loadImage(cinder::app::loadAsset( "2ec01f5f9ef54422276d913e6cb4e8f9.jpg" ) );
   mTexBack = cinder::gl::Texture2d::create( img_crosser_back );
@@ -98,6 +130,11 @@ void MyApp::keyDown(KeyEvent event) {
       crosser_.Move(mylibrary::Direction::kRight);
       break;
     }
+    case KeyEvent::KEY_q: {
+      isGameOver_ = false;
+      isWinner_ = false;
+      Reset();
+    }
   }
 }
 
@@ -116,10 +153,18 @@ void MyApp::drawCrosser() {
           loc.Col(),
           loc.Row() + l.GetWidth(),
           loc.Col() + ktile_size)) {
+        score_ = score_ - 5;
+        isWinner_ = false;
+        isGameOver_ = true;
         Reset();
       }
     }
     blockers_vect.clear();
+    if (crosser_.IsInWinningPosition()) {
+      isWinner_ = true;
+      isGameOver_ = true;
+      Reset();
+    }
   }
 
   //set crossers location and draw
@@ -151,8 +196,71 @@ void MyApp::drawBlocker() {
   }
 }
 
+void MyApp::drawWinScreen() {
+  cinder::gl::clear();
+  auto img_win_two = loadImage(cinder::app::loadAsset("brewster-wallpaper-2679-002117-64_1000.jpg") );
+  mTexWinTwo = cinder::gl::Texture2d::create( img_win_two );
+  cinder::gl::draw( mTexWinTwo, cinder::Rectf(0, 0,
+                                               kboard_size,
+                                               kboard_size));
+
+  auto img_win = loadImage(cinder::app::loadAsset("winners-clipart-17.png") );
+  mTexWin = cinder::gl::Texture2d::create( img_win );
+  cinder::gl::draw( mTexWin, cinder::Rectf(ktile_size*3, ktile_size*3,
+                                            kboard_size - ktile_size*3,
+                                            ktile_size*5.5));
+  const cinder::vec2 center = {400, 300};
+  const cinder::ivec2 size = {500, 50};
+//  size_t row = 0;
+//  for (const myLibrary::Person& person : winners_) {
+//    std::stringstream ss;
+//    ss << person.name << " - " << person.score;
+//    PrintText(ss.str(), size, {center.x,
+//                                      center.y + (++row) * 50});
+//  }
+}
+
+void MyApp::drawLoseScreen() {
+  std::cout << "DRAW SCREEN CALLED";
+  cinder::gl::clear();
+  auto img_lose_two = loadImage(cinder::app::loadAsset("Screen Shot 2020-04-25 at 9.54.20 PM.png") );
+  mTexloseTwo = cinder::gl::Texture2d::create( img_lose_two );
+  cinder::gl::draw( mTexloseTwo, cinder::Rectf(0, 0,
+                                            kboard_size,
+                                            kboard_size));
+
+  auto img_lose = loadImage(cinder::app::loadAsset("26-512.png") );
+  mTexlose = cinder::gl::Texture2d::create( img_lose );
+  cinder::gl::draw( mTexlose, cinder::Rectf(ktile_size*6, ktile_size*6,
+                                            kboard_size - ktile_size*6,
+                                            kboard_size - ktile_size*6));
+
+  const cinder::vec2 center = {400, 600};
+  const cinder::ivec2 size = {500, 50};
+  PrintText("Press key Q to go back to the game", size, center);
+
+}
+
+void MyApp::PrintText(const std::string& text, const cinder::ivec2& size,
+               const cinder::vec2& loc) {
+  auto box = TextBox()
+      .alignment(TextBox::CENTER)
+      .font(cinder::Font("Arial", 30))
+      .size(size)
+      .backgroundColor(ColorA(0, 0, 0, 0))
+      .text(text);
+
+  const auto box_size = box.getSize();
+  const cinder::vec2 locp = {loc.x - box_size.x / 2,
+                             loc.y - box_size.y / 2};
+  const auto surface = box.render();
+  const auto texture = cinder::gl::Texture::create(surface);
+  cinder::gl::draw(texture, locp);
+}
+
 void MyApp::Reset() {
   crosser_.SetLocation(mylibrary::Location(375, 750));
+  score_ = 100;
 }
 
 }  // namespace myapp
