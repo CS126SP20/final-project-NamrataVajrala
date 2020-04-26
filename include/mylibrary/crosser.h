@@ -22,6 +22,7 @@ class Crosser{
   bool DoesIntersect(int x_one, int y_one, int x_two, int y_two);
   void Move(Direction dir);
   bool IsInWinningPosition();
+  bool IsInside(int x_one, int y_one, int x_two, int y_two);
 };
 
 }  // namespace mylibrary

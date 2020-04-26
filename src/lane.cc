@@ -16,6 +16,7 @@ Lane::Lane(int blockers_num, int width, int lane_num, int lane_speed, std::vecto
   lane_number_ = lane_num;
   speed_ = lane_speed;
   blockers_vector_ = blockers;
+  height_ = kHeight_screen - (ktile_width * lane_number_);
 //  FillBlockersVector();
 
 }
@@ -45,6 +46,10 @@ int Lane::GetSpeed() {
 
 int Lane::GetNumBlockers() {
   return num_blockers_;
+}
+
+  int Lane::GetHeight() {
+  return height_;
 }
 
 void Lane::MoveLane() {

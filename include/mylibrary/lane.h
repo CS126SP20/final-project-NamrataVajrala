@@ -21,6 +21,7 @@ class Lane {
   int lane_number_;
   int speed_;
   std::vector<mylibrary::Blocker *> blockers_vector_;
+  int height_;
 
  public:
   Lane(int blockers_num, int width, int lane_num, int lane_speed, std::vector<mylibrary::Blocker *>& blockers);
@@ -30,6 +31,7 @@ class Lane {
   int GetSpeed();
   void MoveLane();
   int GetNumBlockers();
+  int GetHeight();
 };
 
 }

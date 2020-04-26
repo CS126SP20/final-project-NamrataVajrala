@@ -8,17 +8,20 @@
 
 namespace mylibrary {
 
+const int kcharacter_size = 50;
+
 class Blocker {
  private:
   int x_loc_;
   int y_loc_;
   int speed_blocker_;
-  int width__blocker;
+  int width_blocker;
 //  int height_;
   Location location_;
  public:
   Blocker(int x, int y, int speed, int w);
   Location GetLocation();
+  Location GetCenterLocation();
   void SetLocation(Location loc);
   void MoveBlocker();
   };

@@ -36,6 +36,7 @@ namespace myapp {
 cinder::gl::Texture2dRef mTex;
 cinder::gl::Texture2dRef mTexBack;
 cinder::gl::Texture2dRef mTexBlocker;
+cinder::gl::Texture2dRef mTexLog;
 cinder::gl::Texture2dRef mTexWin;
 cinder::gl::Texture2dRef mTexWinTwo;
 cinder::gl::Texture2dRef mTexlose;
@@ -53,12 +54,15 @@ MyApp::MyApp() {
 void MyApp::setup() {
   isWinner_ = false;
   isGameOver_ = false;
+  safe_ = false;
   score_ = 100;
-  //int num_of_obstacles[knumber_lanes] = {0, 2, 3, 4, 3, 1, 5, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
-  int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-  int width[knumber_lanes] = {0, 200, 100, 50, 100, 300, 50, 200, 100, 200, 50, 100, 200, 50, 300, 0 };
+  int num_of_obstacles[knumber_lanes] = {0, 2, 3, 4, 3, 1, 5, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
+  //int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 3, 2, 5, 1, 0 };
+  //int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  int width[knumber_lanes] = {0, 200, 300, 50, 100, 300, 50, 200, 100, 200, 100, 300, 200, 50, 300, 0 };
   int speed[knumber_lanes] = {0, 2, 3, 5, 3, 6, 5, 2, 10, 10, 4, 3, 9, 5, 10, 0 };
 
+  num_obstacles_ = 8;
   for (int i = 0; i < knumber_lanes; i++) {
     mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i], blockers_vector_);
     lanes_.push_back(lane);
@@ -139,24 +143,28 @@ void MyApp::keyDown(KeyEvent event) {
 }
 
 void MyApp::drawCrosser() {
+  safe_ = false;
   //set an image for crosser
   auto img_crosser = loadImage(cinder::app::loadAsset( "f3a453e988c557182b5494a3ac794d92.png" ) );
   mTex = cinder::gl::Texture2d::create( img_crosser );
 
   std::vector<mylibrary::Blocker *> blockers_vect;
+  int count = 0;
   //check if crosser hits any of the blocks
   for (mylibrary::Lane l : lanes_) {
+//    safe_ = false;
     blockers_vect = l.GetBlockersVector();
-    for (int i = 0; i < l.GetNumBlockers(); i++) {
-      mylibrary::Location loc = (blockers_vect.at(i))->GetLocation();
-      if (crosser_.DoesIntersect(loc.Row(),
-          loc.Col(),
-          loc.Row() + l.GetWidth(),
-          loc.Col() + ktile_size)) {
-        score_ = score_ - 5;
-        isWinner_ = false;
-        isGameOver_ = true;
-        Reset();
+    if(count < num_obstacles_) {
+      for (int i = 0; i < l.GetNumBlockers(); i++) {
+        mylibrary::Location loc = (blockers_vect.at(i))->GetLocation();
+        if (crosser_.DoesIntersect(loc.Row(), loc.Col(),
+                                   loc.Row() + l.GetWidth(),
+                                   loc.Col() + ktile_size)) {
+          score_ = score_ - 5;
+          isWinner_ = false;
+          isGameOver_ = true;
+          Reset();
+        }
       }
     }
     blockers_vect.clear();
@@ -165,6 +173,60 @@ void MyApp::drawCrosser() {
       isGameOver_ = true;
       Reset();
     }
+    count++;
+  }
+
+//  else {
+//    double m = crosser_.GetLocation().Col();
+//    double n = (kboard_size - (ktile_size * num_obstacles_));
+//    bool x = m < n;
+//    if (x) {
+////        safe_ = false;
+//      for (int i = 0; i < l.GetNumBlockers(); i++) {
+//        mylibrary::Location loc = (blockers_vect.at(i))->GetLocation();
+//        if (crosser_.DoesIntersect(loc.Row(), loc.Col(),
+//                                   loc.Row() + l.GetWidth(),
+//                                   loc.Col() + ktile_size)) {
+//          safe_  = true;
+//          //blockers_vect.at(i)->GetCenterLocation()
+//          crosser_.SetLocation(loc);
+//        }
+//      }
+//      if (safe_ == false) {
+//        isWinner_ = false;
+//        isGameOver_ = true;
+//        safe_ = false;
+//        Reset();
+//      }
+//    }
+//  }
+
+
+  int c = 0;
+  safe_ = false;
+  if (crosser_.GetLocation().Col() < (kboard_size - (ktile_size * num_obstacles_))) {
+    for (mylibrary::Lane l : lanes_) {
+      blockers_vect = l.GetBlockersVector();
+      if (c >= num_obstacles_) {
+        for (int i = 0; i < l.GetNumBlockers(); i++) {
+          mylibrary::Location loc = (blockers_vect.at(i))->GetLocation();
+          if (crosser_.DoesIntersect(loc.Row(), loc.Col(),
+                                     loc.Row() + l.GetWidth(),
+                                     loc.Col() + ktile_size)) {
+            safe_ = true;
+            crosser_.SetLocation(blockers_vect.at(i)->GetCenterLocation());
+          }
+        }
+      }
+      c++;
+    }
+    if (safe_ == false) {
+      isWinner_ = false;
+      isGameOver_ = true;
+      safe_ = false;
+      Reset();
+    }
+
   }
 
   //set crossers location and draw
@@ -179,18 +241,27 @@ void MyApp::drawBlocker() {
   std::vector<std::string> blocker_images;
 
   for (int i = 0; i < lanes_.size(); i++) {
-    //set images for lane
+    //set images for blocker
     auto img_blocker = loadImage(cinder::app::loadAsset("volleyball-game-sports-court-play-512.png") );
     mTexBlocker = cinder::gl::Texture2d::create( img_blocker );
+    //set images for log
+    auto img_log = loadImage(cinder::app::loadAsset("rectangle-shape-clipart-28.png") );
+    mTexLog = cinder::gl::Texture2d::create( img_log );
 
     blockers_vector_ = lanes_[i].GetBlockersVector();
 
     for (int j = 0; j < lanes_[i].GetNumBlockers(); j++) {
       blockers_vector_.at(j)->MoveBlocker();
       mylibrary::Location loc_top = blockers_vector_.at(j)->GetLocation();
-      cinder::gl::draw( mTexBlocker, cinder::Rectf(loc_top.Row(), loc_top.Col(),
-                                                   loc_top.Row() + lanes_[i].GetWidth(),
-                                                   loc_top.Col() + ktile_size));
+      if(i < num_obstacles_) {
+        cinder::gl::draw( mTexBlocker, cinder::Rectf(loc_top.Row(), loc_top.Col(),
+                                                     loc_top.Row() + lanes_[i].GetWidth(),
+                                                     loc_top.Col() + ktile_size));
+      } else {
+        cinder::gl::draw( mTexLog, cinder::Rectf(loc_top.Row(), loc_top.Col(),
+                                                     loc_top.Row() + lanes_[i].GetWidth(),
+                                                     loc_top.Col() + ktile_size));
+      }
     }
     blockers_vector_.clear();
   }
@@ -221,7 +292,6 @@ void MyApp::drawWinScreen() {
 }
 
 void MyApp::drawLoseScreen() {
-  std::cout << "DRAW SCREEN CALLED";
   cinder::gl::clear();
   auto img_lose_two = loadImage(cinder::app::loadAsset("Screen Shot 2020-04-25 at 9.54.20 PM.png") );
   mTexloseTwo = cinder::gl::Texture2d::create( img_lose_two );
@@ -240,6 +310,7 @@ void MyApp::drawLoseScreen() {
   PrintText("Press key Q to go back to the game", size, center);
 
 }
+
 
 void MyApp::PrintText(const std::string& text, const cinder::ivec2& size,
                const cinder::vec2& loc) {

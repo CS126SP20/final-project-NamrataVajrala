@@ -27,6 +27,8 @@ class MyApp : public cinder::app::App {
   int score_;
   //ScoreBoard scoreboard_;
   std::string name_;
+  int num_obstacles_;
+  bool safe_ = true;
 
  public:
   MyApp();

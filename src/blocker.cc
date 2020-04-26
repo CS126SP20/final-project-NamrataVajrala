@@ -10,7 +10,7 @@ Blocker::Blocker(int x, int y, int speed, int w) : location_{Location(x, y)} {
   x_loc_ = x;
   y_loc_ = y;
   speed_blocker_ = speed;
-  width__blocker = w;
+  width_blocker = w;
 }
 
 Location Blocker::GetLocation() { return location_; }
@@ -22,11 +22,17 @@ void Blocker::SetLocation(Location loc) {
 void Blocker::MoveBlocker() {
     x_loc_ = x_loc_ + speed_blocker_;
 
-    if (x_loc_ > width__blocker+800) {
-      x_loc_ = -width__blocker;
+    if (x_loc_ > width_blocker+800) {
+      x_loc_ = -width_blocker;
     }
 
     location_ = Location(x_loc_,y_loc_);
 }
+
+Location Blocker::GetCenterLocation() {
+  int x = x_loc_ + (int)(width_blocker/2) - (int)(kcharacter_size/2);
+  return Location(x, y_loc_);
+}
+
 
 }  // namespace mylibrary
