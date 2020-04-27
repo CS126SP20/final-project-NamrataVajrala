@@ -20,7 +20,7 @@ void ScoreBoard::AddScore(const myLibrary::Person& person) {
 
 std::vector<myLibrary::Person> ScoreBoard::RetrieveHighScores(const size_t limit) {
   auto rows = db_ << "SELECT name, score "
-                     "FROM leaderboard "
+                     "FROM scoreboard "
                      "ORDER BY score DESC "
                      "LIMIT (?);"
                   << limit;

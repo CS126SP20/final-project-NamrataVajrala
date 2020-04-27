@@ -25,7 +25,7 @@ class MyApp : public cinder::app::App {
   bool isGameOver_;
   std::vector<myLibrary::Person> winners_;
   int score_;
-  //ScoreBoard scoreboard_;
+  ScoreBoard scoreboard_;
   std::string name_;
   int num_obstacles_;
   bool safe_ = true;

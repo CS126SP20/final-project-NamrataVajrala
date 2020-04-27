@@ -42,12 +42,13 @@ cinder::gl::Texture2dRef mTexWinTwo;
 cinder::gl::Texture2dRef mTexlose;
 cinder::gl::Texture2dRef mTexloseTwo;
 
-//const char kDbPath[] = "identifier.db";
+const char kDbPath[] = "identifier.sqlite";
 
 
 using cinder::app::KeyEvent;
 //: scoreboard_(cinder::app::getAssetPath(kDbPath).string())
-MyApp::MyApp() {
+MyApp::MyApp() : scoreboard_(cinder::app::getAssetPath(kDbPath).string())
+{
 
 }
 
@@ -56,13 +57,14 @@ void MyApp::setup() {
   isGameOver_ = false;
   safe_ = false;
   score_ = 100;
-  int num_of_obstacles[knumber_lanes] = {0, 2, 3, 4, 3, 1, 5, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
+  name_ = "nim";
+  //int num_of_obstacles[knumber_lanes] = {0, 2, 3, 4, 3, 1, 5, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
   //int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 3, 2, 5, 1, 0 };
-  //int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   int width[knumber_lanes] = {0, 200, 300, 50, 100, 300, 50, 200, 100, 200, 100, 300, 200, 50, 300, 0 };
   int speed[knumber_lanes] = {0, 2, 3, 5, 3, 6, 5, 2, 10, 10, 4, 3, 9, 5, 10, 0 };
 
-  num_obstacles_ = 8;
+  num_obstacles_ = 16;
   for (int i = 0; i < knumber_lanes; i++) {
     mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i], blockers_vector_);
     lanes_.push_back(lane);
@@ -78,11 +80,11 @@ void MyApp::update() {
 void MyApp::draw() {
 
   if (isGameOver_) {
-//    if (winners_.empty()) {
-//      scoreboard_.AddScore({name_,static_cast<size_t>( score_)});
-//      winners_ = scoreboard_.RetrieveHighScores(3);
-//      assert(!winners_.empty());
-//    }
+    if (winners_.empty()) {
+      scoreboard_.AddScore(myLibrary::Person(name_,static_cast<size_t>( score_)));
+      winners_ = scoreboard_.RetrieveHighScores(3);
+      assert(!winners_.empty());
+    }
     cinder::gl::clear(Color(
         1, 0, 0));
     if (isWinner_) {
@@ -99,11 +101,13 @@ void MyApp::draw() {
   mTexBack = cinder::gl::Texture2d::create( img_crosser_back );
   cinder::gl::draw( mTexBack, cinder::Rectf(0, 0, 800, 800));
 
+  //draw all blockers
+  drawBlocker();
+
   //draw crosser
   drawCrosser();
 
-  //draw all blockers
-  drawBlocker();
+
 
 }
 
@@ -282,13 +286,13 @@ void MyApp::drawWinScreen() {
                                             ktile_size*5.5));
   const cinder::vec2 center = {400, 300};
   const cinder::ivec2 size = {500, 50};
-//  size_t row = 0;
-//  for (const myLibrary::Person& person : winners_) {
-//    std::stringstream ss;
-//    ss << person.name << " - " << person.score;
-//    PrintText(ss.str(), size, {center.x,
-//                                      center.y + (++row) * 50});
-//  }
+  size_t row = 0;
+  for (const myLibrary::Person& person : winners_) {
+    std::stringstream ss;
+    ss << person.name << " - " << person.score;
+    PrintText(ss.str(), size, {center.x,
+                                      center.y + (++row) * 50});
+  }
 }
 
 void MyApp::drawLoseScreen() {
@@ -309,6 +313,13 @@ void MyApp::drawLoseScreen() {
   const cinder::ivec2 size = {500, 50};
   PrintText("Press key Q to go back to the game", size, center);
 
+  size_t row = 0;
+  for (const myLibrary::Person& person : winners_) {
+    std::stringstream ss;
+    ss << person.name << " - " << person.score;
+    PrintText(ss.str(), size, {center.x,
+                               center.y + (++row) * 50});
+  }
 }
 
 
