@@ -69,6 +69,11 @@ add_subdirectory(apps)
 add_subdirectory(tests)
 
 ############## Third-party Libraries #####################
+FetchContent_Declare(
+        gflags
+        GIT_REPOSITORY https://github.com/gflags/gflags.git
+        GIT_TAG v2.2.2
+)
 
 # Database library
 FetchContent_Declare(
@@ -83,6 +88,12 @@ FetchContent_Declare(
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
     GIT_TAG        v2.11.1
 )
+
+FetchContent_GetProperties(gflags)
+if(NOT gflags_POPULATED)
+    FetchContent_Populate(gflags)
+    add_subdirectory(${gflags_SOURCE_DIR} ${gflags_BINARY_DIR})
+endif()
 
 # Adds sqlite_modern_cpp.
 FetchContent_GetProperties(sqlite-modern-cpp)

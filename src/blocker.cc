@@ -22,8 +22,12 @@ void Blocker::SetLocation(Location loc) {
 void Blocker::MoveBlocker() {
     x_loc_ = x_loc_ + speed_blocker_;
 
-    if (x_loc_ > width_blocker+800) {
+    if ((speed_blocker_ > 0) && x_loc_ > width_blocker+800) {
       x_loc_ = -width_blocker;
+    }
+
+    if ((speed_blocker_ < 0) && x_loc_ < -width_blocker) {
+      x_loc_ = width_blocker+800;
     }
 
     location_ = Location(x_loc_,y_loc_);

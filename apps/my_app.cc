@@ -12,6 +12,7 @@
 //#include <gflags/gflags.h>
 #include "imgui.h"
 #include "mylibrary/person.h"
+#include <gflags/gflags.h>
 
 
 using cinder::Color;
@@ -33,6 +34,9 @@ using cinder::TextBox;
 #include "cinder/gl/Texture.h"
 #include "mylibrary/lane.h"
 namespace myapp {
+
+DECLARE_uint32(speed);
+DECLARE_string(name);
 cinder::gl::Texture2dRef mTex;
 cinder::gl::Texture2dRef mTexBack;
 cinder::gl::Texture2dRef mTexBlocker;
@@ -47,7 +51,9 @@ const char kDbPath[] = "identifier.sqlite";
 
 using cinder::app::KeyEvent;
 //: scoreboard_(cinder::app::getAssetPath(kDbPath).string())
-MyApp::MyApp() : scoreboard_(cinder::app::getAssetPath(kDbPath).string())
+MyApp::MyApp() : scoreboard_(cinder::app::getAssetPath(kDbPath).string()),
+                 name_{FLAGS_name},
+                 speed_factor_{FLAGS_speed}
 {
 
 }
@@ -57,14 +63,19 @@ void MyApp::setup() {
   isGameOver_ = false;
   safe_ = false;
   score_ = 100;
-  name_ = "nim";
-  //int num_of_obstacles[knumber_lanes] = {0, 2, 3, 4, 3, 1, 5, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
+  //name_ = "nim";
+  //screen size extensible
+  int num_of_obstacles[knumber_lanes] = {0, 2, 3, 4, 3, 1, 5, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
   //int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 3, 2, 5, 1, 0 };
-  int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-  int width[knumber_lanes] = {0, 200, 300, 50, 100, 300, 50, 200, 100, 200, 100, 300, 200, 50, 300, 0 };
-  int speed[knumber_lanes] = {0, 2, 3, 5, 3, 6, 5, 2, 10, 10, 4, 3, 9, 5, 10, 0 };
+  //int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  int width[knumber_lanes] = {0, 200, 100, 50, 100, 300, 50, 200, 100, 200, 100, 300, 200, 50, 300, 0 };
+  size_t speed[knumber_lanes] = {0 + speed_factor_ , -2 - speed_factor_, 3 + speed_factor_,
+                              -5 - speed_factor_, 3 + speed_factor_, -6 - speed_factor_,
+                              5 + speed_factor_, -2 - speed_factor_, 10 + speed_factor_,
+                              -10 - speed_factor_, 4 + speed_factor_, -3 - speed_factor_,
+                              9 + speed_factor_, -5 - speed_factor_, 10 + speed_factor_, 0 + speed_factor_};
 
-  num_obstacles_ = 16;
+  num_obstacles_ = 8;
   for (int i = 0; i < knumber_lanes; i++) {
     mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i], blockers_vector_);
     lanes_.push_back(lane);
@@ -262,6 +273,7 @@ void MyApp::drawBlocker() {
                                                      loc_top.Row() + lanes_[i].GetWidth(),
                                                      loc_top.Col() + ktile_size));
       } else {
+        //blocker = takes in img
         cinder::gl::draw( mTexLog, cinder::Rectf(loc_top.Row(), loc_top.Col(),
                                                      loc_top.Row() + lanes_[i].GetWidth(),
                                                      loc_top.Col() + ktile_size));
@@ -343,6 +355,7 @@ void MyApp::PrintText(const std::string& text, const cinder::ivec2& size,
 void MyApp::Reset() {
   crosser_.SetLocation(mylibrary::Location(375, 750));
   score_ = 100;
+  winners_.clear();
 }
 
 }  // namespace myapp

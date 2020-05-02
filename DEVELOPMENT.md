@@ -18,3 +18,13 @@
 
 * added obstacles to the screen
 * in process of coding movement and collision of obstacles
+
+4/24 - 4/25 
+* added a new library SQLITE
+* Coded functionality to display name and high score 
+
+4/26 - 4/28
+* debugged code
+* coded the functionality to make a different set of 
+obstacles where the crosser cannot step on the ground, 
+but only on the specified objects

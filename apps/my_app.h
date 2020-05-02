@@ -29,6 +29,7 @@ class MyApp : public cinder::app::App {
   std::string name_;
   int num_obstacles_;
   bool safe_ = true;
+  size_t speed_factor_;
 
  public:
   MyApp();
