@@ -8,7 +8,7 @@
 #include "mylibrary/lane.h"
 #include "mylibrary/person.h"
 #include "mylibrary/ScoreBoard.h"
-
+//#include "mylibrary/location.h"
 
 namespace myapp {
 
@@ -30,6 +30,7 @@ class MyApp : public cinder::app::App {
   int num_obstacles_;
   bool safe_ = true;
   size_t speed_factor_;
+  //mylibrary::Location prev_loc_;
 
  public:
   MyApp();

@@ -62,12 +62,12 @@ void MyApp::setup() {
   isWinner_ = false;
   isGameOver_ = false;
   safe_ = false;
-  score_ = 100;
+  score_ = 0;
   //name_ = "nim";
   //screen size extensible
-  int num_of_obstacles[knumber_lanes] = {0, 2, 3, 4, 3, 1, 5, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
+  //int num_of_obstacles[knumber_lanes] = {0, 2, 3, 4, 3, 1, 5, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
   //int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 3, 2, 5, 1, 0 };
-  //int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   int width[knumber_lanes] = {0, 200, 100, 50, 100, 300, 50, 200, 100, 200, 100, 300, 200, 50, 300, 0 };
   size_t speed[knumber_lanes] = {0 + speed_factor_ , -2 - speed_factor_, 3 + speed_factor_,
                               -5 - speed_factor_, 3 + speed_factor_, -6 - speed_factor_,
@@ -75,7 +75,7 @@ void MyApp::setup() {
                               -10 - speed_factor_, 4 + speed_factor_, -3 - speed_factor_,
                               9 + speed_factor_, -5 - speed_factor_, 10 + speed_factor_, 0 + speed_factor_};
 
-  num_obstacles_ = 8;
+  num_obstacles_ = 16;
   for (int i = 0; i < knumber_lanes; i++) {
     mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i], blockers_vector_);
     lanes_.push_back(lane);
@@ -90,19 +90,24 @@ void MyApp::update() {
 
 void MyApp::draw() {
 
+  winners_.clear();
   if (isGameOver_) {
     if (winners_.empty()) {
       scoreboard_.AddScore(myLibrary::Person(name_,static_cast<size_t>( score_)));
       winners_ = scoreboard_.RetrieveHighScores(3);
       assert(!winners_.empty());
     }
-    cinder::gl::clear(Color(
-        1, 0, 0));
     if (isWinner_) {
       drawWinScreen();
+      //score_ = 0;
       return;
     } else {
+//      for(int i = 0; i < winners_.size(); i++) {
+//        std::cout << winners_[i].name;
+//        std::cout << winners_[i].score;
+//      }
       drawLoseScreen();
+      //score_ = 0;
       return;
     }
   }
@@ -152,6 +157,9 @@ void MyApp::keyDown(KeyEvent event) {
     case KeyEvent::KEY_q: {
       isGameOver_ = false;
       isWinner_ = false;
+      score_=0;
+      winners_.clear();
+      cinder::gl::clear();
       Reset();
     }
   }
@@ -175,17 +183,28 @@ void MyApp::drawCrosser() {
         if (crosser_.DoesIntersect(loc.Row(), loc.Col(),
                                    loc.Row() + l.GetWidth(),
                                    loc.Col() + ktile_size)) {
-          score_ = score_ - 5;
+//          score_ = score_ + 5;
           isWinner_ = false;
           isGameOver_ = true;
+          score_ = crosser_.CalculateScore(speed_factor_);
+          //score_ = score_ + (kboard_size - crosser_.GetLocation().Col()) - ktile_size*2;
           Reset();
         }
       }
     }
+    //score_ = score_ + count*10;
+//    if(crosser_.IsCrosserUpARow()) {
+//      score_ = score_ + 5;
+//    }
+//    if (isGameOver_ == false) {
+//      score_ = score_ + 5;
+//    }
     blockers_vect.clear();
     if (crosser_.IsInWinningPosition()) {
       isWinner_ = true;
       isGameOver_ = true;
+      score_ = crosser_.CalculateScore(speed_factor_);
+      //score_ = score_ + (kboard_size - crosser_.GetLocation().Col());
       Reset();
     }
     count++;
@@ -228,6 +247,7 @@ void MyApp::drawCrosser() {
           if (crosser_.DoesIntersect(loc.Row(), loc.Col(),
                                      loc.Row() + l.GetWidth(),
                                      loc.Col() + ktile_size)) {
+            //score_ = score_ + 5;
             safe_ = true;
             crosser_.SetLocation(blockers_vect.at(i)->GetCenterLocation());
           }
@@ -239,6 +259,8 @@ void MyApp::drawCrosser() {
       isWinner_ = false;
       isGameOver_ = true;
       safe_ = false;
+      score_ = crosser_.CalculateScore(speed_factor_);
+      //score_ = score_ + (kboard_size - crosser_.GetLocation().Col());
       Reset();
     }
 
@@ -296,8 +318,16 @@ void MyApp::drawWinScreen() {
   cinder::gl::draw( mTexWin, cinder::Rectf(ktile_size*3, ktile_size*3,
                                             kboard_size - ktile_size*3,
                                             ktile_size*5.5));
-  const cinder::vec2 center = {400, 300};
+  const cinder::vec2 center = {400, 400};
   const cinder::ivec2 size = {500, 50};
+
+  std::stringstream ss;
+  ss << "Your score: " << name_ << " - " << score_;
+  PrintText(ss.str(), size, {400,
+                             300});
+
+  PrintText("Press key Q to go back to the game", size, {400, 350});
+  PrintText("Overall Highest Scores", size, center);
   size_t row = 0;
   for (const myLibrary::Person& person : winners_) {
     std::stringstream ss;
@@ -317,13 +347,22 @@ void MyApp::drawLoseScreen() {
 
   auto img_lose = loadImage(cinder::app::loadAsset("26-512.png") );
   mTexlose = cinder::gl::Texture2d::create( img_lose );
-  cinder::gl::draw( mTexlose, cinder::Rectf(ktile_size*6, ktile_size*6,
-                                            kboard_size - ktile_size*6,
-                                            kboard_size - ktile_size*6));
+  cinder::gl::draw( mTexlose, cinder::Rectf(250, 150,
+                                            550,
+                                            450));
+//  ktile_size*6, ktile_size*6,
+//      kboard_size - ktile_size*6,
+//      kboard_size - ktile_size*9));
+  const cinder::ivec2 size = {500, 50};
+  std::stringstream ss;
+  ss << "Your score: " << name_ << " - " << score_;
+  PrintText(ss.str(), size, {400,
+                             500});
 
   const cinder::vec2 center = {400, 600};
-  const cinder::ivec2 size = {500, 50};
-  PrintText("Press key Q to go back to the game", size, center);
+
+  PrintText("Press key Q to go back to the game", size, {400, 550});
+  PrintText("Overall Highest Scores", size, center);
 
   size_t row = 0;
   for (const myLibrary::Person& person : winners_) {
@@ -332,6 +371,7 @@ void MyApp::drawLoseScreen() {
     PrintText(ss.str(), size, {center.x,
                                center.y + (++row) * 50});
   }
+  //score_ = 0;
 }
 
 
@@ -354,7 +394,7 @@ void MyApp::PrintText(const std::string& text, const cinder::ivec2& size,
 
 void MyApp::Reset() {
   crosser_.SetLocation(mylibrary::Location(375, 750));
-  score_ = 100;
+  //score_=0;
   winners_.clear();
 }
 
