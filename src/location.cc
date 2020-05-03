@@ -2,7 +2,9 @@
 // Created by Namrata Vajrala on 4/19/20.
 //
 
-#include "mylibrary/location.h"
+//#include "mylibrary/location.h"
+
+#include "../include/mylibrary/location.h"
 
 namespace mylibrary {
 

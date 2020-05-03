@@ -2,11 +2,13 @@
 // Created by Namrata Vajrala on 4/20/20.
 //
 
-#include "mylibrary/lane.h"
+//#include "mylibrary/lane.h"
 
 #include <utility>
-#include "mylibrary/blocker.h"
 
+#include "../include/mylibrary/blocker.h"
+#include "../include/mylibrary/lane.h"
+//#include "mylibrary/blocker.h"
 
 namespace mylibrary {
 
@@ -17,13 +19,7 @@ Lane::Lane(int blockers_num, int width, int lane_num, int lane_speed, std::vecto
   speed_ = lane_speed;
   blockers_vector_ = blockers;
   height_ = kHeight_screen - (ktile_width * lane_number_);
-//  FillBlockersVector();
-
 }
-
-//void Lane::FillBlockersVector() {
-//
-//}
 
 std::vector<mylibrary::Blocker *>& Lane::GetBlockersVector() {
   int x = 0;
@@ -51,13 +47,4 @@ int Lane::GetNumBlockers() {
   int Lane::GetHeight() {
   return height_;
 }
-
-void Lane::MoveLane() {
-  for (int i = 0; i < num_blockers_; i++) {
-    blockers_vector_.at(i)->MoveBlocker();
-  }
-}
-
-
-
 }

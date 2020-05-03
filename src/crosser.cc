@@ -44,8 +44,8 @@ void Crosser::Move(Direction dir) {
 }
 
 size_t Crosser::CalculateScore(int speed) {
-  size_t score;
-  score += ((kHeight - location_.Col()) - ktile_size*2)*(speed+1);
+  int score;
+  score = ((kHeight - location_.Col()) - ktile_size*2)*(speed+1);
   return score;
 }
 

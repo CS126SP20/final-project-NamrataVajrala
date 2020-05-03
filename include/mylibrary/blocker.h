@@ -4,7 +4,9 @@
 
 #ifndef FINALPROJECT_BLOCKER_H
 #define FINALPROJECT_BLOCKER_H
-#include <mylibrary/location.h>
+//#include <mylibrary/location.h>
+
+#include "location.h"
 
 namespace mylibrary {
 

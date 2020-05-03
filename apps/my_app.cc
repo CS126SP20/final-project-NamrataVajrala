@@ -65,9 +65,9 @@ void MyApp::setup() {
   score_ = 0;
   //name_ = "nim";
   //screen size extensible
-  //int num_of_obstacles[knumber_lanes] = {0, 2, 3, 4, 3, 1, 5, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
+  int num_of_obstacles[knumber_lanes] = {0, 2, 3, 4, 3, 1, 5, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
   //int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 3, 2, 5, 1, 0 };
-  int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  //int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   int width[knumber_lanes] = {0, 200, 100, 50, 100, 300, 50, 200, 100, 200, 100, 300, 200, 50, 300, 0 };
   size_t speed[knumber_lanes] = {0 + speed_factor_ , -2 - speed_factor_, 3 + speed_factor_,
                               -5 - speed_factor_, 3 + speed_factor_, -6 - speed_factor_,
@@ -75,7 +75,7 @@ void MyApp::setup() {
                               -10 - speed_factor_, 4 + speed_factor_, -3 - speed_factor_,
                               9 + speed_factor_, -5 - speed_factor_, 10 + speed_factor_, 0 + speed_factor_};
 
-  num_obstacles_ = 16;
+  num_obstacles_ = 8;
   for (int i = 0; i < knumber_lanes; i++) {
     mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i], blockers_vector_);
     lanes_.push_back(lane);

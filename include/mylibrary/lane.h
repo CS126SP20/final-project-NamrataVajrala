@@ -6,7 +6,9 @@
 #define FINALPROJECT_LANE_H
 
 #include <vector>
-#include "mylibrary/blocker.h"
+
+#include "blocker.h"
+//#include "mylibrary/blocker.h"
 
 namespace mylibrary {
 
@@ -29,7 +31,7 @@ class Lane {
   int GetWidth();
   //void FillBlockersVector();
   int GetSpeed();
-  void MoveLane();
+  //void MoveLane();
   int GetNumBlockers();
   int GetHeight();
 };

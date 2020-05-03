@@ -2,7 +2,9 @@
 // Created by Namrata Vajrala on 4/18/20.
 //
 
-#include "mylibrary/blocker.h"
+//#include "mylibrary/blocker.h"
+
+#include "../include/mylibrary/blocker.h"
 
 namespace mylibrary {
 
@@ -37,6 +39,5 @@ Location Blocker::GetCenterLocation() {
   int x = x_loc_ + (int)(width_blocker/2) - (int)(kcharacter_size/2);
   return Location(x, y_loc_);
 }
-
 
 }  // namespace mylibrary

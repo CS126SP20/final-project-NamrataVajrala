@@ -4,10 +4,12 @@
 #define FINALPROJECT_APPS_MYAPP_H_
 
 #include <cinder/app/App.h>
+#include <mylibrary/blocker.h>
 #include <mylibrary/crosser.h>
+
+#include "mylibrary/ScoreBoard.h"
 #include "mylibrary/lane.h"
 #include "mylibrary/person.h"
-#include "mylibrary/ScoreBoard.h"
 //#include "mylibrary/location.h"
 
 namespace myapp {

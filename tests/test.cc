@@ -4,11 +4,149 @@
 
 #include <cinder/Rand.h>
 #include <mylibrary/crosser.h>
+#include <mylibrary/lane.h>
+#include <mylibrary/blocker.h>
+#include <mylibrary/location.h>
+#include <mylibrary/direction.h>
+#include <mylibrary/ScoreBoard.h>
+
 
 #include <catch2/catch.hpp>
 
-TEST_CASE("Random sanity test", "[random]") {
-  const float random = cinder::randFloat();
-  REQUIRE(0. <= random);
-  REQUIRE(random <= 1.);
+TEST_CASE("Set location for crosser test", "[void]") {
+  mylibrary::Crosser crosser_;
+  mylibrary::Location loc = {200, 400};
+  crosser_.SetLocation(loc);
+
+  //getter and setter tests
+  SECTION("Set and get location for crosser test") {
+    REQUIRE(crosser_.GetLocation().Row() == 200);
+    REQUIRE(crosser_.GetLocation().Col() == 400);
+  }
+
+  //tests for does intersect crosser helper method
+  SECTION("crosser intersects when blocker interects bottom right") {
+    REQUIRE(crosser_.DoesIntersect(225, 425, 275, 475));
+  }
+
+  SECTION("crosser intersects when blocker interects top right") {
+    REQUIRE(crosser_.DoesIntersect(225, 375, 275, 425));
+  }
+
+  SECTION("crosser intersects when blocker interects top left") {
+    REQUIRE(crosser_.DoesIntersect(225, 375, 425, 425));
+  }
+
+  SECTION("crosser intersects when blocker interects bottom left") {
+    REQUIRE(crosser_.DoesIntersect(225, 425, 425, 475));
+  }
+
+  SECTION("crosser doesn't interest when blocker doesn't interect") {
+    REQUIRE(!crosser_.DoesIntersect(500, 100, 600, 150));
+  }
+
+  //score calc test
+  SECTION("Calculate score for crosser test") {
+    REQUIRE((int)crosser_.CalculateScore(2) == 900);
+  }
+
+  //win position tests
+  SECTION("crosser is in winning position gives true") {
+    mylibrary::Location loc = {200, 0};
+    crosser_.SetLocation(loc);
+    REQUIRE(crosser_.IsInWinningPosition());
+  }
+
+  SECTION("crosser is in winning position gives false") {
+    REQUIRE(!crosser_.IsInWinningPosition());
+  }
+
+  //crosser move tests
+  SECTION("Crosser moves up") {
+    crosser_.Move(mylibrary::Direction::kUp);
+    REQUIRE(crosser_.GetLocation().Row() == 200);
+    REQUIRE(crosser_.GetLocation().Col() == 350);
+  }
+  SECTION("Crosser moves down") {
+    crosser_.Move(mylibrary::Direction::kDown);
+    REQUIRE(crosser_.GetLocation().Row() == 200);
+    REQUIRE(crosser_.GetLocation().Col() == 450);
+  }
+  SECTION("Crosser moves left") {
+    crosser_.Move(mylibrary::Direction::kLeft);
+    REQUIRE(crosser_.GetLocation().Row() == 150);
+    REQUIRE(crosser_.GetLocation().Col() == 400);
+  }
+  SECTION("Crosser moves Right") {
+    crosser_.Move(mylibrary::Direction::kRight);
+    REQUIRE(crosser_.GetLocation().Row() == 250);
+    REQUIRE(crosser_.GetLocation().Col() == 400);
+  }
+}
+
+TEST_CASE("Blocker tests", "[void]") {
+  mylibrary::Blocker blocker(200, 400, 2, 100);
+
+  SECTION("Get blocker location") {
+    REQUIRE(blocker.GetLocation().Row() == 200);
+    REQUIRE(blocker.GetLocation().Col() == 400);
+  }
+
+  SECTION("Set blocker location") {
+    mylibrary::Location loc = {300, 500};
+    blocker.SetLocation(loc);
+    REQUIRE(blocker.GetLocation().Row() == 300);
+    REQUIRE(blocker.GetLocation().Col() == 500);
+  }
+
+  SECTION("Get Center location for blocker test") {
+    REQUIRE(blocker.GetCenterLocation().Row() == 225);
+    REQUIRE(blocker.GetCenterLocation().Col() == 400);
+  }
+
+  SECTION("Move blocker when speed is positive test") {
+    mylibrary::Blocker blocker(901, 400, 2, 100);
+    blocker.MoveBlocker();
+    REQUIRE(blocker.GetLocation().Row() == -100);
+    REQUIRE(blocker.GetCenterLocation().Col() == 400);
+  }
+
+  SECTION("Move blocker when speed is negative test") {
+    mylibrary::Blocker blocker(-200, 400, -2, 100);
+    blocker.MoveBlocker();
+    REQUIRE(blocker.GetLocation().Row() == 900);
+    REQUIRE(blocker.GetCenterLocation().Col() == 400);
+  }
+
+  SECTION("Move blocker when speed is 0 test") {
+    mylibrary::Blocker blocker(200, 400, 0, 100);
+    blocker.MoveBlocker();
+    REQUIRE(blocker.GetLocation().Row() == 200);
+    REQUIRE(blocker.GetCenterLocation().Col() == 400);
+  }
+}
+
+TEST_CASE("Lane tests", "[void]") {
+  std::vector<mylibrary::Blocker *> blockers_vector_;
+  mylibrary::Lane lane(3, 100, 1, 2, blockers_vector_);
+  SECTION("Get blockers vector test") {
+    blockers_vector_ = lane.GetBlockersVector();
+    REQUIRE(blockers_vector_.size() == 3);
+  }
+
+  SECTION("Get width lane test") {
+    REQUIRE(lane.GetWidth() == 100);
+  }
+
+  SECTION("Get height lane test") {
+    REQUIRE(lane.GetHeight() == 750);
+  }
+
+  SECTION("Get speed lane test") {
+    REQUIRE(lane.GetSpeed() == 2);
+  }
+
+  SECTION("Get numblockers lane test") {
+    REQUIRE(lane.GetNumBlockers() == 3);
+  }
 }
