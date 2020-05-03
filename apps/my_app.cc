@@ -52,8 +52,9 @@ const char kDbPath[] = "identifier.sqlite";
 using cinder::app::KeyEvent;
 //: scoreboard_(cinder::app::getAssetPath(kDbPath).string())
 MyApp::MyApp() : scoreboard_(cinder::app::getAssetPath(kDbPath).string()),
-                 name_{FLAGS_name},
-                 speed_factor_{FLAGS_speed}
+                 //name_{FLAGS_name},
+                 speed_factor_{FLAGS_speed},
+                 crosser_{FLAGS_name}
 {
 
 }
@@ -62,7 +63,7 @@ void MyApp::setup() {
   isWinner_ = false;
   isGameOver_ = false;
   safe_ = false;
-  score_ = 0;
+  //score_ = 0;
 
   //screen size extensible
   //int num_of_obstacles[knumber_lanes] = {0, 2, 3, 3, 3, 1, 3, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
@@ -118,9 +119,12 @@ void MyApp::update() {
 }
 
 void MyApp::draw() {
+
+  //Game over functionality
   if (isGameOver_) {
     if (winners_.empty()) {
-      scoreboard_.AddScore(myLibrary::Person(name_,static_cast<size_t>( score_)));
+      //scoreboard_.AddScore(myLibrary::Person(name_,static_cast<size_t>( crosser_.GetScore())));
+      scoreboard_.AddScore(myLibrary::Person(crosser_.GetName(),static_cast<size_t>( crosser_.GetScore())));
       winners_ = scoreboard_.RetrieveHighScores(3);
       assert(!winners_.empty());
     }
@@ -173,7 +177,8 @@ void MyApp::keyDown(KeyEvent event) {
     case KeyEvent::KEY_q: {
       isGameOver_ = false;
       isWinner_ = false;
-      score_=0;
+      //score_=0;
+      crosser_.SetScore(0);
       winners_.clear();
       cinder::gl::clear();
       Reset();
@@ -184,6 +189,7 @@ void MyApp::keyDown(KeyEvent event) {
 void MyApp::drawCrosser() {
   safe_ = false;
 
+  //Implementation for the blockers that hit the crosser
   std::vector<mylibrary::Blocker *> blockers_vect;
   int count = 0;
   //check if crosser hits any of the blocks
@@ -197,27 +203,30 @@ void MyApp::drawCrosser() {
                                    loc.Col() + ktile_size)) {
           isWinner_ = false;
           isGameOver_ = true;
-          score_ = crosser_.CalculateScore(speed_factor_);
+          //score_ = crosser_.CalculateScore(speed_factor_);
+          crosser_.CalculateScore(speed_factor_);
           Reset();
         }
       }
     }
+    //check if crosser is in the winning position
     blockers_vect.clear();
     if (crosser_.IsInWinningPosition()) {
       isWinner_ = true;
       isGameOver_ = true;
-      score_ = crosser_.CalculateScore(speed_factor_);
+      //score_ = crosser_.CalculateScore(speed_factor_);
+      crosser_.CalculateScore(speed_factor_);
       Reset();
     }
     count++;
   }
 
-  int c = 0;
+  //Implementation for the blockers that the crosser jumps onto
   safe_ = false;
   if (crosser_.GetLocation().Col() < (kboard_size - (ktile_size * num_obstacles_))) {
     for (mylibrary::Lane l : lanes_) {
       blockers_vect = l.GetBlockersVector();
-      if (c >= num_obstacles_) {
+      if (count >= num_obstacles_) {
         for (int i = 0; i < l.GetNumBlockers(); i++) {
           mylibrary::Location loc = (blockers_vect.at(i))->GetLocation();
           if (crosser_.DoesIntersect(loc.Row(), loc.Col(),
@@ -228,13 +237,14 @@ void MyApp::drawCrosser() {
           }
         }
       }
-      c++;
+      count++;
     }
     if (safe_ == false) {
       isWinner_ = false;
       isGameOver_ = true;
       safe_ = false;
-      score_ = crosser_.CalculateScore(speed_factor_);
+      //score_ = crosser_.CalculateScore(speed_factor_);
+      crosser_.CalculateScore(speed_factor_);
       Reset();
     }
   }
@@ -288,7 +298,9 @@ void MyApp::drawWinScreen() {
   const cinder::ivec2 size = {500, 50};
 
   std::stringstream ss;
-  ss << "Your score: " << name_ << " - " << score_;
+  //ss << "Your score: " << name_ << " - " << score_;
+//  ss << "Your score: " << name_ << " - " << crosser_.GetScore();
+  ss << "Your score: " << crosser_.GetName() << " - " << crosser_.GetScore();
   PrintText(ss.str(), size, {400,
                              300});
 
@@ -318,7 +330,9 @@ void MyApp::drawLoseScreen() {
   //print score information
   const cinder::ivec2 size = {500, 50};
   std::stringstream ss;
-  ss << "Your score: " << name_ << " - " << score_;
+  //ss << "Your score: " << name_ << " - " << score_;
+  //ss << "Your score: " << name_ << " - " << crosser_.GetScore();
+  ss << "Your score: " << crosser_.GetName() << " - " << crosser_.GetScore();
   PrintText(ss.str(), size, {400,
                              500});
 

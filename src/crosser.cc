@@ -1,11 +1,16 @@
 // Copyright (c) 2020 [Your Name]. All rights reserved.
 
 #include <mylibrary/crosser.h>
+
+#include <string>
 //#include <sqlite_modern_cpp.h>
 
 namespace mylibrary {
 
-Crosser::Crosser() : location_{Location(375, 750)} {}
+Crosser::Crosser(std::string name) : location_{Location(375, 750)} {
+  score_ = 0;
+  name_ = name;
+}
 
 Location Crosser::GetLocation() { return location_; }
 void Crosser::SetLocation(Location loc) { location_= loc; }
@@ -43,10 +48,22 @@ void Crosser::Move(Direction dir) {
   }
 }
 
-size_t Crosser::CalculateScore(int speed) {
-  int score;
-  score = ((kHeight - location_.Col()) - ktile_size*2)*(speed+1);
-  return score;
+void Crosser::CalculateScore(int speed) {
+  //int score;
+  score_ = ((kHeight - location_.Col()) - ktile_size*2)*(speed+1);
+  //return score;
+}
+
+void Crosser::SetScore(int score) {
+  score_ = score;
+}
+
+size_t Crosser::GetScore() {
+  return score_;
+}
+
+std::string Crosser::GetName() {
+  return name_;
 }
 
 bool Crosser::IsInWinningPosition() {
