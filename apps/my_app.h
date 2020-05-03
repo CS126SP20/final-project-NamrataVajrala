@@ -32,7 +32,6 @@ class MyApp : public cinder::app::App {
   int num_obstacles_;
   bool safe_ = true;
   size_t speed_factor_;
-  //mylibrary::Location prev_loc_;
 
  public:
   MyApp();
