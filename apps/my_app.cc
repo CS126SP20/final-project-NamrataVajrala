@@ -65,11 +65,11 @@ void MyApp::setup() {
   score_ = 0;
 
   //screen size extensible
-  int num_of_obstacles[knumber_lanes] = {0, 2, 3, 4, 3, 1, 5, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
-  //int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 3, 2, 5, 1, 0 };
+  //int num_of_obstacles[knumber_lanes] = {0, 2, 3, 3, 3, 1, 3, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
+  int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 4, 3, 2, 5, 1, 0 };
   //int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   int width[knumber_lanes] = {0, 200, 100, 50, 100, 300, 50, 200, 100, 200, 100, 300, 200, 50, 300, 0 };
-  int speed[knumber_lanes] = {0, -2, 3, -5, 3, -6, 5, -2, 10, -10, 4, -3, 9, -5, 10, 0};
+  int speed[knumber_lanes] = {0, -1, 2, -2, 1, -3, 4, -1, 1, -2, 1, -1, 3, -1, 4, 0};
   for (int i = 0; i < knumber_lanes; i++) {
     if (speed[i] > 0) {
       speed[i] += speed_factor_;
@@ -95,16 +95,21 @@ void MyApp::setup() {
   //set lose screen images
   auto img_lose_two = loadImage(cinder::app::loadAsset("Screen Shot 2020-04-25 at 9.54.20 PM.png") );
   mTexloseTwo = cinder::gl::Texture2d::create( img_lose_two );
-
   auto img_lose = loadImage(cinder::app::loadAsset("26-512.png") );
   mTexlose = cinder::gl::Texture2d::create( img_lose );
 
   //set win screen images
   auto img_win_two = loadImage(cinder::app::loadAsset("brewster-wallpaper-2679-002117-64_1000.jpg") );
   mTexWinTwo = cinder::gl::Texture2d::create( img_win_two );
-
   auto img_win = loadImage(cinder::app::loadAsset("winners-clipart-17.png") );
   mTexWin = cinder::gl::Texture2d::create( img_win );
+
+  //set images for blocker
+  auto img_blocker = loadImage(cinder::app::loadAsset("volleyball-game-sports-court-play-512.png") );
+  mTexBlocker = cinder::gl::Texture2d::create( img_blocker );
+  //set images for log
+  auto img_log = loadImage(cinder::app::loadAsset("rectangle-shape-clipart-28.png") );
+  mTexLog = cinder::gl::Texture2d::create( img_log );
 }
 
 void MyApp::update() {
@@ -246,13 +251,6 @@ void MyApp::drawBlocker() {
   std::vector<std::string> blocker_images;
 
   for (int i = 0; i < lanes_.size(); i++) {
-    //set images for blocker
-    auto img_blocker = loadImage(cinder::app::loadAsset("volleyball-game-sports-court-play-512.png") );
-    mTexBlocker = cinder::gl::Texture2d::create( img_blocker );
-    //set images for log
-    auto img_log = loadImage(cinder::app::loadAsset("rectangle-shape-clipart-28.png") );
-    mTexLog = cinder::gl::Texture2d::create( img_log );
-
     blockers_vector_ = lanes_[i].GetBlockersVector();
 
     for (int j = 0; j < lanes_[i].GetNumBlockers(); j++) {
