@@ -7,6 +7,9 @@
 
 namespace mylibrary {
 
+/**
+ * enum class with directuibs as enums
+ */
 enum class Direction { kUp, kDown, kLeft, kRight };
 
 }
