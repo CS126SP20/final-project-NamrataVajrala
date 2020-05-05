@@ -18,6 +18,13 @@ namespace myapp {
 const int kboard_size = 800;
 const int ktile_size = 50;
 const int knumber_lanes = 16;
+const int kone = 1;
+const int ktwo = 2;
+const int kthree = 3;
+const int kfour = 4;
+const int kfive = 5;
+const int khundred = 100;
+const int kfifty = 50;
 
 class MyApp : public cinder::app::App {
  private:

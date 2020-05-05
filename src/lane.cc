@@ -12,7 +12,8 @@
 
 namespace mylibrary {
 
-Lane::Lane(int blockers_num, int width, int lane_num, int lane_speed, std::vector<mylibrary::Blocker *>& blockers) {
+Lane::Lane(int blockers_num, int width, int lane_num, int lane_speed,
+    std::vector<mylibrary::Blocker *>& blockers) {
   num_blockers_ = blockers_num;
   width_ = width;
   lane_number_ = lane_num;
@@ -27,7 +28,8 @@ std::vector<mylibrary::Blocker *>& Lane::GetBlockersVector() {
   for (int i = 0; i < num_blockers_; i++) {
     Blocker * blocker = new Blocker(x, y, speed_, width_);
     blockers_vector_.push_back(blocker);
-    x = x + (int)(width_ + ((kWidth_screen - (width_*num_blockers_))/ (double)(num_blockers_ - 1)));
+    x = x + (int)(width_ + ((kWidth_screen - (width_*num_blockers_))/
+        (double)(num_blockers_ - 1)));
   }
   return blockers_vector_;
 }
