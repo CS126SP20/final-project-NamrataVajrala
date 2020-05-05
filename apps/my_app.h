@@ -12,7 +12,6 @@
 #include "mylibrary/ScoreBoard.h"
 #include "mylibrary/lane.h"
 #include "mylibrary/person.h"
-//#include "mylibrary/location.h"
 
 namespace myapp {
 
@@ -69,13 +68,9 @@ class MyApp : public cinder::app::App {
    */
   void Reset();
   /**
-   * draws the winning screen
-   */
-  void drawWinScreen();
-  /**
    * draws the losing screen
    */
-  void drawLoseScreen();
+  void drawEndGameScreen(std::string screen_type);
   /**
    * prints text in the attributes passed
    */

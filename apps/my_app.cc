@@ -45,9 +45,8 @@ cinder::gl::Texture2dRef mTexBack;
 cinder::gl::Texture2dRef mTexBlocker;
 cinder::gl::Texture2dRef mTexLog;
 cinder::gl::Texture2dRef mTexWin;
-cinder::gl::Texture2dRef mTexWinTwo;
 cinder::gl::Texture2dRef mTexlose;
-cinder::gl::Texture2dRef mTexloseTwo;
+cinder::gl::Texture2dRef mTexEndGameBack;
 cinder::audio::VoiceRef mVoice;
 
 const char kDbPath[] = "identifier.sqlite";
@@ -72,8 +71,8 @@ void MyApp::setup() {
   unsigned random_number = ( rand() % (3 - 1 + 1) ) + 1;
   //screen size extensible
   //int num_of_obstacles[knumber_lanes] = {0, 2, 3, 3, 2, 1, 3, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
-  int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 4, 3, 2, 5, 1, 0 };
-  //int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  //int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 4, 3, 2, 5, 1, 0 };
+  int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   int width[knumber_lanes] = {0, 100, 100, 50, 200, 150, 50, 30, 100, 100, 140, 150, 70, 50, 150, 0 };
   int speed[knumber_lanes] = {0, -1, 2, -2, 1, -3, 4, -1, 1, -2, 1, -1, 3, -1, 4, 0};
   for (int i = 0; i < knumber_lanes; i++) {
@@ -84,10 +83,11 @@ void MyApp::setup() {
     }
   }
 
+
   cinder::audio::SourceFileRef sourceFile = cinder::audio::load(cinder::app::loadAsset( "Phineas and Ferb Soundtrack Intro Instrumental.wav" ) );
   mVoice = cinder::audio::Voice::create( sourceFile );
 
-  num_obstacles_ = 8;
+  num_obstacles_ = 16;
   for (int i = 0; i < knumber_lanes; i++) {
     mylibrary::Lane lane(num_of_obstacles[i], width[i], i + 1, speed[i], blockers_vector_);
     lanes_.push_back(lane);
@@ -102,18 +102,16 @@ void MyApp::setup() {
   mTex = cinder::gl::Texture2d::create( img_crosser );
 
   //set an image for crosser two
-  auto img_crosser_two = loadImage(cinder::app::loadAsset( "perry-the-platypus-ferb-fletcher-phineas-flynn-drawing-mixing-agent.jpg" ) );
+  auto img_crosser_two = loadImage(cinder::app::loadAsset( "p6.png" ) );
   mTexTwo = cinder::gl::Texture2d::create( img_crosser_two );
 
   //set lose screen images
-  auto img_lose_two = loadImage(cinder::app::loadAsset("Screen Shot 2020-04-25 at 9.54.20 PM.png") );
-  mTexloseTwo = cinder::gl::Texture2d::create( img_lose_two );
+  auto img_end_back = loadImage(cinder::app::loadAsset("Screen Shot 2020-04-25 at 9.54.20 PM.png") );
+  mTexEndGameBack = cinder::gl::Texture2d::create( img_end_back );
   auto img_lose = loadImage(cinder::app::loadAsset("26-512.png") );
   mTexlose = cinder::gl::Texture2d::create( img_lose );
 
   //set win screen images
-  auto img_win_two = loadImage(cinder::app::loadAsset("Screen Shot 2020-04-25 at 9.54.20 PM.png") );
-  mTexWinTwo = cinder::gl::Texture2d::create( img_win_two );
   auto img_win = loadImage(cinder::app::loadAsset("winners-clipart-17.png") );
   mTexWin = cinder::gl::Texture2d::create( img_win );
 
@@ -145,10 +143,10 @@ void MyApp::draw() {
       assert(!winners_.empty());
     }
     if (isWinner_) {
-      drawWinScreen();
+      drawEndGameScreen("win");
       return;
     } else {
-      drawLoseScreen();
+      drawEndGameScreen("lose");
       return;
     }
   }
@@ -312,50 +310,23 @@ void MyApp::drawBlocker() {
   }
 }
 
-void MyApp::drawWinScreen() {
+void MyApp::drawEndGameScreen(std::string screen_type) {
   cinder::gl::clear();
 
   //draw screen
-  cinder::gl::draw( mTexWinTwo, cinder::Rectf(0, 0,
-                                               kboard_size,
-                                               kboard_size));
-
-  cinder::gl::draw( mTexWin, cinder::Rectf(ktile_size*3, ktile_size*3,
-                                            kboard_size - ktile_size*3,
-                                            ktile_size*5.5));
-
-  //print score information
-  const cinder::vec2 center = {400, 450};
-  const cinder::ivec2 size = {500, 50};
-
-  std::stringstream ss;
-
-  ss << "Your score: " << crosser_.GetName() << " - " << crosser_.GetScore();
-  PrintText(ss.str(), size, {400,
-                             350});
-
-  PrintText("Press key Q to go back to the game", size, {400, 400});
-  PrintText("Overall Highest Scores", size, center);
-  size_t row = 0;
-  for (const myLibrary::Person& person : winners_) {
-    std::stringstream ss;
-    ss << person.name << " - " << person.score;
-    PrintText(ss.str(), size, {center.x,
-                                      center.y + (++row) * 50});
-  }
-}
-
-void MyApp::drawLoseScreen() {
-  cinder::gl::clear();
-
-  //draw screen
-  cinder::gl::draw( mTexloseTwo, cinder::Rectf(0, 0,
+  cinder::gl::draw( mTexEndGameBack, cinder::Rectf(0, 0,
                                             kboard_size,
                                             kboard_size));
 
-  cinder::gl::draw( mTexlose, cinder::Rectf(250, 150,
-                                            550,
-                                            450));
+  if (screen_type == "lose") {
+    cinder::gl::draw( mTexlose, cinder::Rectf(250, 100,
+        550, 400));
+  }
+  if (screen_type == "win") {
+    cinder::gl::draw( mTexWin, cinder::Rectf(ktile_size*3, ktile_size*3,
+                                             kboard_size - ktile_size*3,
+                                             ktile_size*5.5));
+  }
 
   //print score information
   const cinder::ivec2 size = {500, 50};
@@ -366,28 +337,28 @@ void MyApp::drawLoseScreen() {
 
   ss_one << "Score: " << crosser_.GetName() << " - " << crosser_.GetScore();
   PrintText(ss_one.str(), size, {400,
-                             450});
+                             400});
   //ss.clear();
   if (is_multiplayer_) {
     ss_two << "Score: " << crosser_two_.GetName() << " - " << crosser_two_.GetScore();
     PrintText(ss_two.str(), size, {400,
-                               500});
+                               450});
     //ss.clear();
-    if(crosser_.GetScore() < crosser_two_.GetScore()) {
+    if(crosser_.GetScore() > crosser_two_.GetScore()) {
       ss_three << crosser_.GetName() << " WON!";
-    } else if(crosser_.GetScore() > crosser_two_.GetScore()) {
+    } else if(crosser_.GetScore() < crosser_two_.GetScore()) {
       ss_three << crosser_two_.GetName() << " WON!";
     } else {
       ss_three << "TIE GAME";
     }
     PrintText(ss_three.str(), size, {400,
-                               550});
+                               500});
     ss.clear();
   }
 
 
-  const cinder::vec2 center = {400, 650};
-  PrintText("Press key Q to go back to the game", size, {400, 600});
+  const cinder::vec2 center = {400, 600};
+  PrintText("Press key Q to go back to the game", size, {400, 550});
   PrintText("Overall Highest Scores", size, center);
   size_t row = 0;
   for (const myLibrary::Person& person : winners_) {
