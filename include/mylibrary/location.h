@@ -19,6 +19,13 @@ class Location {
   Location(int row, int col);
 
   /**
+   * checks if locations are equal
+   * @param rhs other location
+   * @return bool if equal
+   */
+  bool operator==(const Location& rhs) const;
+
+  /**
    * addition operator
    * @param rhs second location
    * @return location addition

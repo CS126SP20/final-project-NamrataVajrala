@@ -18,7 +18,7 @@ namespace myapp {
 const int kboard_size = 800;
 const int ktile_size = 50;
 const int knumber_lanes = 16;
-const int knum_obstacles_ = 14;
+const int knum_obstacles_ = 8;
 const int kone = 1;
 const int ktwo = 2;
 const int kthree = 3;

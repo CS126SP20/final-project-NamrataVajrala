@@ -8,6 +8,10 @@ namespace mylibrary {
 
 Location::Location(int row, int col) : row_(row), col_(col) {}
 
+bool Location::operator==(const Location& rhs) const {
+  return row_ == rhs.row_ && col_ == rhs.col_;
+}
+
 Location Location::operator+(const Location& rhs) const {
   return { row_ + rhs.row_, col_ + rhs.col_ };
 }

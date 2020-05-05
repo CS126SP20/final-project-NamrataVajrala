@@ -61,12 +61,9 @@ MyApp::MyApp() : scoreboard_(cinder::app::getAssetPath(kDbPath).string()),
 void MyApp::setup() {
 
   //initialize lanes vector
-//  int num_of_obstacles[knumber_lanes] = {0, ktwo, kthree, kthree, ktwo, kone,
-//                                         kthree, ktwo, kthree, ktwo, kfour,
-//                                         kthree, ktwo, kfive, kone, 0 };
-  //int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 4, 3, 2, 5, 1, 0 };
-  int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 1, 0, 0, 0,
-                                         0, 0, 0, 0, 0, 0, 1, 0 };
+  int num_of_obstacles[knumber_lanes] = {0, ktwo, kthree, kthree, ktwo, kone,
+                                         kthree, ktwo, kthree, ktwo, kfour,
+                                         kthree, ktwo, kfive, kone, 0 };
   int width[knumber_lanes] = {0, khundred, khundred, kfifty, khundred*ktwo,
                               khundred+kfifty, kfifty, kfifty,
                               khundred, khundred, khundred+kfifty,
@@ -333,10 +330,10 @@ void MyApp::drawEndGameScreen(const std::string& screen_type) {
                                             kboard_size,
                                             kboard_size));
   if (screen_type == "lose") {
-    cinder::gl::draw( mTex_lose, cinder::Rectf(kfifty*(ktwo+kthree),
-                                              kfifty*ktwo,
-                                              kboard_size/(float)ktwo
-                                              + kfifty*kthree,
+    cinder::gl::draw( mTex_lose, cinder::Rectf(
+        kfifty*(ktwo+kthree),
+        kfifty*ktwo,
+        kboard_size/(float)ktwo + kfifty*kthree,
         kboard_size/(float)ktwo));
   }
   if (screen_type == "win") {
