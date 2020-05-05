@@ -5,7 +5,6 @@
 #ifndef FINALPROJECT_PERSON_H
 #define FINALPROJECT_PERSON_H
 
-
 #include <string>
 
 namespace myLibrary {

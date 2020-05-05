@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "blocker.h"
-//#include "mylibrary/blocker.h"
 
 namespace mylibrary {
 
@@ -34,7 +33,8 @@ class Lane {
    * @param lane_speed speed of lane
    * @param blockers blockers vector
    */
-  Lane(int blockers_num, int width, int lane_num, int lane_speed, std::vector<mylibrary::Blocker *>& blockers);
+  Lane(int blockers_num, int width, int lane_num,
+      int lane_speed, std::vector<mylibrary::Blocker *>& blockers);
   /**
    * gets the vector of blockers
    * @return blocker's vector
@@ -44,24 +44,23 @@ class Lane {
    * gets the width of the blocker
    * @return int width
    */
-  int GetWidth();
-  //void FillBlockersVector();
+  int GetWidth() const;
   /**
    * returns the speed of the lane
    * @return int speed
    */
-  int GetSpeed();
+  int GetSpeed() const;
   //void MoveLane();
   /**
    * gets the number of blockers
    * @return int num of blockers
    */
-  int GetNumBlockers();
+  int GetNumBlockers() const;
   /**
    * gets the height of the blockers
    * @return int height
    */
-  int GetHeight();
+  int GetHeight() const;
 };
 
 }

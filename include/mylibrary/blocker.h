@@ -4,7 +4,6 @@
 
 #ifndef FINALPROJECT_BLOCKER_H
 #define FINALPROJECT_BLOCKER_H
-//#include <mylibrary/location.h>
 
 #include "location.h"
 
@@ -18,7 +17,6 @@ class Blocker {
   int y_loc_;
   int speed_blocker_;
   int width_blocker;
-//  int height_;
   Location location_;
  public:
   /**
@@ -33,12 +31,12 @@ class Blocker {
    * gets the blocker location
    * @return location
    */
-  Location GetLocation();
+  Location GetLocation() const;
   /**
    * Gets the location of the center of the blocker
    * @return location
    */
-  Location GetCenterLocation();
+  Location GetCenterLocation() const;
   /**
    * sets the location of the blocker
    * @param loc location to set to

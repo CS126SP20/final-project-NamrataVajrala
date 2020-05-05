@@ -18,6 +18,7 @@ namespace myapp {
 const int kboard_size = 800;
 const int ktile_size = 50;
 const int knumber_lanes = 16;
+const int knum_obstacles_ = 14;
 const int kone = 1;
 const int ktwo = 2;
 const int kthree = 3;
@@ -32,11 +33,10 @@ class MyApp : public cinder::app::App {
   mylibrary::Crosser crosser_two_;
   std::vector<mylibrary::Lane> lanes_;
   std::vector<mylibrary::Blocker *> blockers_vector_;
-  bool isWinner_;
-  bool isGameOver_;
+  bool is_winner_;
+  bool is_game_over_;
   std::vector<myLibrary::Person> winners_;
   ScoreBoard scoreboard_;
-  int num_obstacles_;
   bool safe_ = true;
   size_t speed_factor_;
   bool is_multiplayer_;
@@ -65,7 +65,8 @@ class MyApp : public cinder::app::App {
   /**
    * draws the crosser object and checks for intersection
    */
-  void drawCrosser(mylibrary::Crosser& crosser_obj, cinder::gl::Texture2dRef texture);
+  void drawCrosser(mylibrary::Crosser& crosser_obj,
+      const cinder::gl::Texture2dRef& texture);
   /**
    * draws the blocker objects in each lane
    */
@@ -77,7 +78,7 @@ class MyApp : public cinder::app::App {
   /**
    * draws the losing screen
    */
-  void drawEndGameScreen(std::string screen_type);
+  void drawEndGameScreen(const std::string& screen_type);
   /**
    * prints text in the attributes passed
    */

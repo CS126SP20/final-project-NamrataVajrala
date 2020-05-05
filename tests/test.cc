@@ -14,7 +14,7 @@
 #include <catch2/catch.hpp>
 
 TEST_CASE("Set location for crosser test", "[void]") {
-  mylibrary::Crosser crosser_;
+  mylibrary::Crosser crosser_("meap");
   mylibrary::Location loc = {200, 400};
   crosser_.SetLocation(loc);
 
@@ -47,7 +47,15 @@ TEST_CASE("Set location for crosser test", "[void]") {
 
   //score calc test
   SECTION("Calculate score for crosser test") {
-    REQUIRE((int)crosser_.CalculateScore(2) == 900);
+    crosser_.CalculateScore(2);
+    REQUIRE((int)crosser_.GetScore() == 900);
+  }
+
+  SECTION("Calculate score for crosser test if crosser didn't move") {
+    mylibrary::Location loc = {375, 750};
+    crosser_.SetLocation(loc);
+    crosser_.CalculateScore(2);
+    REQUIRE((int)crosser_.GetScore() == 0);
   }
 
   //win position tests
@@ -81,6 +89,21 @@ TEST_CASE("Set location for crosser test", "[void]") {
     crosser_.Move(mylibrary::Direction::kRight);
     REQUIRE(crosser_.GetLocation().Row() == 250);
     REQUIRE(crosser_.GetLocation().Col() == 400);
+  }
+
+  //set and get score tests
+  SECTION("Getter for score") {
+    REQUIRE(crosser_.GetScore() == 0);
+  }
+
+  SECTION("Setter for score") {
+    crosser_.SetScore(5);
+    REQUIRE(crosser_.GetScore() == 5);
+  }
+
+  //get name test
+  SECTION("Getter for name") {
+    REQUIRE(crosser_.GetName() == "meap");
   }
 }
 
@@ -128,7 +151,9 @@ TEST_CASE("Blocker tests", "[void]") {
 
 TEST_CASE("Lane tests", "[void]") {
   std::vector<mylibrary::Blocker *> blockers_vector_;
-  mylibrary::Lane lane(3, 100, 1, 2, blockers_vector_);
+  mylibrary::Lane lane(3, 100, 1,
+      2, blockers_vector_);
+
   SECTION("Get blockers vector test") {
     blockers_vector_ = lane.GetBlockersVector();
     REQUIRE(blockers_vector_.size() == 3);

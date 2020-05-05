@@ -5,10 +5,7 @@
 #ifndef FINALPROJECT_SCOREBOARD_H
 #define FINALPROJECT_SCOREBOARD_H
 
-//#include <sqlite_modern_cpp.h>
-
 #include "../../cmake-build-debug/_deps/sqlite-modern-cpp-src/hdr/sqlite_modern_cpp.h"
-//#include "mylibrary/person.h"
 #include "person.h"
 
 class ScoreBoard {
@@ -27,8 +24,6 @@ class ScoreBoard {
    */
   void AddScore(const myLibrary::Person&);
 
-  // Returns a list of the players with the highest scores, in decreasing order.
-  // The size of the list should be no greater than `limit`.
   /**
    * gets the highest scoring players
    * @param limit max amount of players

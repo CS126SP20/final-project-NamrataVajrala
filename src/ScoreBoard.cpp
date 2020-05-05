@@ -2,12 +2,9 @@
 // Created by Namrata Vajrala on 4/25/20.
 //
 
-//#include "mylibrary/ScoreBoard.h"
-
-#include "../include/mylibrary/ScoreBoard.h"
-
 #include <string>
 
+#include "../include/mylibrary/ScoreBoard.h"
 #include "../include/mylibrary/person.h"
 
 ScoreBoard::ScoreBoard(const std::string& db_path) : db_{db_path} {

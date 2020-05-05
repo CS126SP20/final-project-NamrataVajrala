@@ -2,18 +2,21 @@
 #ifndef FINALPROJECT_MYLIBRARY_EXAMPLE_H_
 #define FINALPROJECT_MYLIBRARY_EXAMPLE_H_
 
+#include <string>
+
 #include <mylibrary/direction.h>
 #include <mylibrary/location.h>
-
-#include <string>
 
 namespace mylibrary {
 
 const int kWidth = 800;
 const int kHeight = 800;
 const int ktile_size = 50;
+const int ktwo_val = 2;
+const int kinit_x = 375;
+const int kinit_y = 750;
 
-class Crosser{
+class Crosser {
  private:
   Location location_;
   int score_;
@@ -23,12 +26,12 @@ class Crosser{
    * crosser constructor, intitializes name
    * @param name name of crosser
    */
-  Crosser(std::string name);
+  explicit Crosser(std::string name);
   /**
    * gets the location of crosser
    * @return location
    */
-  Location GetLocation();
+  Location GetLocation() const;
   /**
    * sets the crosser's location
    * @param loc location to set to
@@ -42,7 +45,7 @@ class Crosser{
    * @param y_two second y of blocker
    * @return bool if it interects
    */
-  bool DoesIntersect(int x_one, int y_one, int x_two, int y_two);
+  bool DoesIntersect(int x_one, int y_one, int x_two, int y_two) const;
   /**
    * moves the crosser based on the dir
    * @param dir direction to move in
@@ -52,7 +55,7 @@ class Crosser{
    * checks if crosser is at the winning pos
    * @return bool if in pos
    */
-  bool IsInWinningPosition();
+  bool IsInWinningPosition() const;
   /**
    * calculates the score based on the speed
    * @param speed speed factor of crosser
@@ -67,12 +70,12 @@ class Crosser{
    * gets the score for the crosser
    * @return crosser's score
    */
-  size_t GetScore();
+  size_t GetScore() const;
   /**
    * gets the name of the crosser
    * @return name of crrosser
    */
-  std::string GetName();
+  std::string GetName() const;
 };
 
 }  // namespace mylibrary

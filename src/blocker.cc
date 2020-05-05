@@ -2,8 +2,6 @@
 // Created by Namrata Vajrala on 4/18/20.
 //
 
-//#include "mylibrary/blocker.h"
-
 #include "../include/mylibrary/blocker.h"
 
 namespace mylibrary {
@@ -15,7 +13,9 @@ Blocker::Blocker(int x, int y, int speed, int w) : location_{Location(x, y)} {
   width_blocker = w;
 }
 
-Location Blocker::GetLocation() { return location_; }
+Location Blocker::GetLocation() const {
+  return location_;
+}
 
 void Blocker::SetLocation(Location loc) {
   location_ = loc;
@@ -35,9 +35,9 @@ void Blocker::MoveBlocker() {
     location_ = Location(x_loc_,y_loc_);
 }
 
-Location Blocker::GetCenterLocation() {
+Location Blocker::GetCenterLocation() const {
   int x = x_loc_ + (int)(width_blocker/2) - (int)(kcharacter_size/2);
-  return Location(x, y_loc_);
+  return {x, y_loc_};
 }
 
 }  // namespace mylibrary
