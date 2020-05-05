@@ -22,6 +22,8 @@ const int kHeight = 800;
 
 DEFINE_uint32(speed, 0, "the speed (delay) of the game");
 DEFINE_string(name, "MEAP", "the name of the player");
+DEFINE_bool(multiplayer, false, "2 player or 1 player");
+DEFINE_string(othername, "PERRY", "the name of the second player");
 
 
 void ParseArgs(std::vector<std::string>* args) {

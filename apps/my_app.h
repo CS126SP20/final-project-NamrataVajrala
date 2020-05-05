@@ -33,6 +33,7 @@ class MyApp : public cinder::app::App {
   int num_obstacles_;
   bool safe_ = true;
   size_t speed_factor_;
+  bool is_multiplayer_;
 
  public:
   /**
@@ -58,7 +59,7 @@ class MyApp : public cinder::app::App {
   /**
    * draws the crosser object and checks for intersection
    */
-  void drawCrosser();
+  void drawCrosser(mylibrary::Crosser& crosser_obj, cinder::gl::Texture2dRef texture);
   /**
    * draws the blocker objects in each lane
    */

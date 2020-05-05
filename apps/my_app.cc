@@ -37,6 +37,8 @@ namespace myapp {
 
 DECLARE_uint32(speed);
 DECLARE_string(name);
+DECLARE_string(othername);
+DECLARE_bool(multiplayer);
 cinder::gl::Texture2dRef mTex;
 cinder::gl::Texture2dRef mTexTwo;
 cinder::gl::Texture2dRef mTexBack;
@@ -56,7 +58,8 @@ MyApp::MyApp() : scoreboard_(cinder::app::getAssetPath(kDbPath).string()),
                  //name_{FLAGS_name},
                  speed_factor_{FLAGS_speed},
                  crosser_{FLAGS_name},
-                 crosser_two_{"other"}
+                 crosser_two_{FLAGS_othername},
+                 is_multiplayer_{FLAGS_multiplayer}
 {
 
 }
@@ -68,15 +71,8 @@ void MyApp::setup() {
   //score_ = 0;
   unsigned random_number = ( rand() % (3 - 1 + 1) ) + 1;
   //screen size extensible
-  int num_of_obstacles[knumber_lanes] = {0, 2, 3, 3, 2, 1, 3, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
-//  for (int i = 0; i < knumber_lanes; i++) {
-//    if (i == 0 || i == (knumber_lanes - 1)) {
-//      num_of_obstacles[i] = 0;
-//    } else {
-//      num_of_obstacles[i] = random_number;
-//    }
-//  }
-  //int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 4, 3, 2, 5, 1, 0 };
+  //int num_of_obstacles[knumber_lanes] = {0, 2, 3, 3, 2, 1, 3, 2, 3, 2, 4, 3, 2, 5, 1, 0 };
+  int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 4, 3, 2, 5, 1, 0 };
   //int num_of_obstacles[knumber_lanes] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   int width[knumber_lanes] = {0, 100, 100, 50, 200, 150, 50, 30, 100, 100, 140, 150, 70, 50, 150, 0 };
   int speed[knumber_lanes] = {0, -1, 2, -2, 1, -3, 4, -1, 1, -2, 1, -1, 3, -1, 4, 0};
@@ -90,11 +86,6 @@ void MyApp::setup() {
 
   cinder::audio::SourceFileRef sourceFile = cinder::audio::load(cinder::app::loadAsset( "Phineas and Ferb Soundtrack Intro Instrumental.wav" ) );
   mVoice = cinder::audio::Voice::create( sourceFile );
-
-  // Start playing audio from the voice:
-//  if (!mVoice->isPlaying()) {
-//    mVoice->start();
-//  }
 
   num_obstacles_ = 8;
   for (int i = 0; i < knumber_lanes; i++) {
@@ -111,12 +102,10 @@ void MyApp::setup() {
   mTex = cinder::gl::Texture2d::create( img_crosser );
 
   //set an image for crosser two
-  auto img_crosser_two = loadImage(cinder::app::loadAsset( "perry.jpg" ) );
+  auto img_crosser_two = loadImage(cinder::app::loadAsset( "perry-the-platypus-ferb-fletcher-phineas-flynn-drawing-mixing-agent.jpg" ) );
   mTexTwo = cinder::gl::Texture2d::create( img_crosser_two );
 
   //set lose screen images
-//  auto img_lose_two = loadImage(cinder::app::loadAsset("Screen Shot 2020-04-25 at 9.54.20 PM.png") );
-//  mTexloseTwo = cinder::gl::Texture2d::create( img_lose_two );
   auto img_lose_two = loadImage(cinder::app::loadAsset("Screen Shot 2020-04-25 at 9.54.20 PM.png") );
   mTexloseTwo = cinder::gl::Texture2d::create( img_lose_two );
   auto img_lose = loadImage(cinder::app::loadAsset("26-512.png") );
@@ -171,48 +160,46 @@ void MyApp::draw() {
   drawBlocker();
 
   //draw crosser
-  drawCrosser();
-  //drawCrosser(crosser_two_, mTexTwo);
+  drawCrosser(crosser_, mTex);
+  if (is_multiplayer_) {
+    drawCrosser(crosser_two_, mTexTwo);
+  }
 }
 
 //problem: pause and reset game functionality
 void MyApp::keyDown(KeyEvent event) {
   switch (event.getCode()) {
-    case KeyEvent::KEY_UP:
-//    case KeyEvent::KEY_k:
-    case KeyEvent::KEY_w: {
+    case KeyEvent::KEY_UP: {
       crosser_.Move(mylibrary::Direction::kUp);
       break;
     }
-    case KeyEvent::KEY_DOWN:
-//    case KeyEvent::KEY_j:
-    case KeyEvent::KEY_s: {
+    case KeyEvent::KEY_DOWN: {
       crosser_.Move(mylibrary::Direction::kDown);
       break;
     }
-    case KeyEvent::KEY_LEFT:
-//    case KeyEvent::KEY_h:
-    case KeyEvent::KEY_a: {
+    case KeyEvent::KEY_LEFT: {
       crosser_.Move(mylibrary::Direction::kLeft);
       break;
     }
-    case KeyEvent::KEY_RIGHT:
-//    case KeyEvent::KEY_l:
-    case KeyEvent::KEY_d: {
+    case KeyEvent::KEY_RIGHT: {
       crosser_.Move(mylibrary::Direction::kRight);
       break;
     }
-    case KeyEvent::KEY_k: {
+    case KeyEvent::KEY_w: {
       crosser_two_.Move(mylibrary::Direction::kUp);
+      break;
     }
-    case KeyEvent::KEY_j: {
+    case KeyEvent::KEY_s: {
       crosser_two_.Move(mylibrary::Direction::kDown);
+      break;
     }
-    case KeyEvent::KEY_h: {
+    case KeyEvent::KEY_a: {
       crosser_two_.Move(mylibrary::Direction::kLeft);
+      break;
     }
-    case KeyEvent::KEY_l: {
+    case KeyEvent::KEY_d: {
       crosser_two_.Move(mylibrary::Direction::kRight);
+      break;
     }
     case KeyEvent::KEY_q: {
       isGameOver_ = false;
@@ -227,7 +214,7 @@ void MyApp::keyDown(KeyEvent event) {
   }
 }
 
-void MyApp::drawCrosser() {
+void MyApp::drawCrosser(mylibrary::Crosser& crosser_obj, cinder::gl::Texture2dRef texture) {
   safe_ = false;
 
   //Implementation for the blockers that hit the crosser
@@ -239,26 +226,26 @@ void MyApp::drawCrosser() {
     if(count < num_obstacles_) {
       for (int i = 0; i < l.GetNumBlockers(); i++) {
         mylibrary::Location loc = (blockers_vect.at(i))->GetLocation();
-        if (crosser_.DoesIntersect(loc.Row(), loc.Col(),
+        if (crosser_obj.DoesIntersect(loc.Row(), loc.Col(),
                                    loc.Row() + l.GetWidth(),
-                                   loc.Col() + ktile_size) ) {
+                                   loc.Col() + ktile_size)) {
           isWinner_ = false;
           isGameOver_ = true;
-          //score_ = crosser_.CalculateScore(speed_factor_);
+          //crosser_obj.CalculateScore(speed_factor_);
           crosser_.CalculateScore(speed_factor_);
-//          crosser_two_.CalculateScore(speed_factor_);
+          crosser_two_.CalculateScore(speed_factor_);
           Reset();
         }
       }
     }
     //check if crosser is in the winning position
     blockers_vect.clear();
-    if (crosser_.IsInWinningPosition()) {
+    if (crosser_obj.IsInWinningPosition()) {
       isWinner_ = true;
       isGameOver_ = true;
-      //score_ = crosser_.CalculateScore(speed_factor_);
+      //crosser_obj.CalculateScore(speed_factor_);
       crosser_.CalculateScore(speed_factor_);
-//      crosser_two_.CalculateScore(speed_factor_);
+      crosser_two_.CalculateScore(speed_factor_);
       Reset();
     }
     count++;
@@ -266,18 +253,17 @@ void MyApp::drawCrosser() {
 
   //Implementation for the blockers that the crosser jumps onto
   safe_ = false;
-  if (crosser_.GetLocation().Col() < (kboard_size - (ktile_size * num_obstacles_))) {
+  if (crosser_obj.GetLocation().Col() < (kboard_size - (ktile_size * num_obstacles_))) {
     for (mylibrary::Lane l : lanes_) {
       blockers_vect = l.GetBlockersVector();
       if (count >= num_obstacles_) {
         for (int i = 0; i < l.GetNumBlockers(); i++) {
           mylibrary::Location loc = (blockers_vect.at(i))->GetLocation();
-          if (crosser_.DoesIntersect(loc.Row(), loc.Col(),
+          if (crosser_obj.DoesIntersect(loc.Row(), loc.Col(),
                                      loc.Row() + l.GetWidth(),
                                      loc.Col() + ktile_size)) {
             safe_ = true;
-            crosser_.SetLocation(blockers_vect.at(i)->GetCenterLocation());
-//            crosser_two_.SetLocation(blockers_vect.at(i)->GetCenterLocation());
+            crosser_obj.SetLocation(blockers_vect.at(i)->GetCenterLocation());
           }
         }
       }
@@ -287,22 +273,18 @@ void MyApp::drawCrosser() {
       isWinner_ = false;
       isGameOver_ = true;
       safe_ = false;
-      //score_ = crosser_.CalculateScore(speed_factor_);
+      //crosser_obj.CalculateScore(speed_factor_);
       crosser_.CalculateScore(speed_factor_);
-//      crosser_two_.CalculateScore(speed_factor_);
+      crosser_two_.CalculateScore(speed_factor_);
       Reset();
     }
   }
 
   //set crossers location and draw
-  mylibrary::Location loc = crosser_.GetLocation();
-//  mylibrary::Location loc_two = crosser_two_.GetLocation();
-  cinder::gl::draw( mTex, cinder::Rectf(loc.Row(), loc.Col(),
+  mylibrary::Location loc = crosser_obj.GetLocation();
+  cinder::gl::draw( texture, cinder::Rectf(loc.Row(), loc.Col(),
       loc.Row() + ktile_size,
       loc.Col() + ktile_size));
-//  cinder::gl::draw( mTexTwo, cinder::Rectf(loc_two.Row(), loc_two.Col(),
-//                                           loc_two.Row() + ktile_size,
-//                                           loc_two.Col() + ktile_size));
 }
 
 void MyApp::drawBlocker() {
@@ -347,8 +329,7 @@ void MyApp::drawWinScreen() {
   const cinder::ivec2 size = {500, 50};
 
   std::stringstream ss;
-  //ss << "Your score: " << name_ << " - " << score_;
-//  ss << "Your score: " << name_ << " - " << crosser_.GetScore();
+
   ss << "Your score: " << crosser_.GetName() << " - " << crosser_.GetScore();
   PrintText(ss.str(), size, {400,
                              350});
@@ -379,17 +360,34 @@ void MyApp::drawLoseScreen() {
   //print score information
   const cinder::ivec2 size = {500, 50};
   std::stringstream ss;
-  //ss << "Your score: " << name_ << " - " << score_;
-  //ss << "Your score: " << name_ << " - " << crosser_.GetScore();
-  ss << "Yours: " << crosser_.GetName() << " - " << crosser_.GetScore();
-  PrintText(ss.str(), size, {400,
-                             500});
-//  ss << "second: " << crosser_two_.GetName() << " - " << crosser_two_.GetScore();
-//  PrintText(ss.str(), size, {400,
-//                             520});
+  std::stringstream ss_one;
+  std::stringstream ss_two;
+  std::stringstream ss_three;
 
-  const cinder::vec2 center = {400, 600};
-  PrintText("Press key Q to go back to the game", size, {400, 550});
+  ss_one << "Score: " << crosser_.GetName() << " - " << crosser_.GetScore();
+  PrintText(ss_one.str(), size, {400,
+                             450});
+  //ss.clear();
+  if (is_multiplayer_) {
+    ss_two << "Score: " << crosser_two_.GetName() << " - " << crosser_two_.GetScore();
+    PrintText(ss_two.str(), size, {400,
+                               500});
+    //ss.clear();
+    if(crosser_.GetScore() < crosser_two_.GetScore()) {
+      ss_three << crosser_.GetName() << " WON!";
+    } else if(crosser_.GetScore() > crosser_two_.GetScore()) {
+      ss_three << crosser_two_.GetName() << " WON!";
+    } else {
+      ss_three << "TIE GAME";
+    }
+    PrintText(ss_three.str(), size, {400,
+                               550});
+    ss.clear();
+  }
+
+
+  const cinder::vec2 center = {400, 650};
+  PrintText("Press key Q to go back to the game", size, {400, 600});
   PrintText("Overall Highest Scores", size, center);
   size_t row = 0;
   for (const myLibrary::Person& person : winners_) {
