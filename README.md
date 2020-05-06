@@ -68,10 +68,6 @@ street
     --name= | string name of player
     --multiplayer= | bool true if double player or false if single player
     
-    **Game Screen Layout:**
-    
-    ![](/Users/namratavajrala/Downloads/cinder_0.9.2_mac/my-projects/final-project-NamrataVajrala/assets/Screen Shot 2020-05-05 at 4.41.13 PM.png)
-
 
 **BACKGROUND KNOWLEDGE**
 
@@ -155,7 +151,66 @@ set up
 * Clone the repository into this project
 * Make sure 
 [SqliteModernCpp](https://github.com/SqliteModernCpp/sqlite_modern_cpp/tree/dev)
-is set up and running
-* Make sure external library [Gflags](https://github.com/gflags/gflags) 
-is set up and running 
+is set up and running:
+
+In CMakeLists under the tests folder:
+```
+# Database library
+FetchContent_Declare(
+        sqlite-modern-cpp
+        GIT_REPOSITORY https://github.com/SqliteModernCpp/sqlite_modern_cpp.git
+        GIT_TAG a0f96c10f04d96ccea1b8a49d5998c96e7887bf4
+)
+```
+```
+# Adds sqlite_modern_cpp.
+FetchContent_GetProperties(sqlite-modern-cpp)
+if (NOT sqlite-modern-cpp_POPULATED)
+    FetchContent_Populate(sqlite-modern-cpp)
+    add_library(sqlite-modern-cpp INTERFACE)
+    target_include_directories(sqlite-modern-cpp INTERFACE ${sqlite-modern-cpp_SOURCE_DIR}/hdr)
+endif ()
+```
+In CMakeLists under the src folder:
+```
+ci_make_library(
+        LIBRARY_NAME mylibrary
+        CINDER_PATH  ${CINDER_PATH}
+        SOURCES      ${SOURCE_LIST}
+        INCLUDES     "${FinalProject_SOURCE_DIR}/include"
+        LIBRARIES   sqlite-modern-cpp sqlite3
+        BLOCKS      Cinder-ImGui
+)
+```
+* Make sure external library [Gflags](https://github.com/gflags/gflags) is set up and running 
+
+In CMakeLists under the tests folder:
+
+```
+FetchContent_GetProperties(gflags)
+if(NOT gflags_POPULATED)
+    FetchContent_Populate(gflags)
+    add_subdirectory(${gflags_SOURCE_DIR} ${gflags_BINARY_DIR})
+endif()
+```
+
+```
+FetchContent_Declare(
+        gflags
+        GIT_REPOSITORY https://github.com/gflags/gflags.git
+        GIT_TAG v2.2.2
+)
+```
+In CMakeLists under the src folder:
+
+```
+ci_make_library(
+        LIBRARY_NAME mylibrary
+        CINDER_PATH  ${CINDER_PATH}
+        SOURCES      ${SOURCE_LIST}
+        INCLUDES     "${FinalProject_SOURCE_DIR}/include"
+        LIBRARIES   gflags sqlite-modern-cpp sqlite3
+        BLOCKS      Cinder-ImGui
+)
+```
 * Run the project to check if it works
