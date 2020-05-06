@@ -76,7 +76,7 @@ crossers and blocker objects
 * reduced number of methods required
 * added another crosser object and 
 implemented multiplayer functionality
-* added glags and score updates for 
+* added gflags and score updates for 
 multiplayer mode
 * updated gui according to the changes
 
@@ -84,6 +84,7 @@ multiplayer mode
 * cleaned up code
 * fixed minor style formatting
 * added extra tests
+* updated readme file
 * finsihed up the project to submit
 
 
