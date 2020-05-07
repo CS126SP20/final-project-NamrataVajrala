@@ -87,5 +87,7 @@ multiplayer mode
 * updated readme file
 * finsihed up the project to submit
 
+5/6
+* extra cleaning up of code
 
 

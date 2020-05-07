@@ -9,7 +9,10 @@
 #include <mylibrary/direction.h>
 #include <catch2/catch.hpp>
 
-TEST_CASE("Set location for crosser test", "[void]") {
+/**
+ * crosser tests
+ */
+TEST_CASE("Crosser tests", "[crosser]") {
   mylibrary::Crosser crosser_("meap");
   mylibrary::Location loc = {200, 400};
   crosser_.SetLocation(loc);
@@ -101,7 +104,10 @@ TEST_CASE("Set location for crosser test", "[void]") {
   }
 }
 
-TEST_CASE("Blocker tests", "[void]") {
+/**
+ * blocker tests
+ */
+TEST_CASE("Blocker tests", "[Blocker]") {
   mylibrary::Blocker blocker(200, 400, 2, 100);
 
   SECTION("Get blocker location") {
@@ -143,7 +149,10 @@ TEST_CASE("Blocker tests", "[void]") {
   }
 }
 
-TEST_CASE("Lane tests", "[void]") {
+/**
+ * lane tests
+ */
+TEST_CASE("Lane tests", "[Lane]") {
   std::vector<mylibrary::Blocker *> blockers_vector_;
   mylibrary::Lane lane(3, 100, 1,
       2, blockers_vector_);
@@ -170,7 +179,10 @@ TEST_CASE("Lane tests", "[void]") {
   }
 }
 
-TEST_CASE("Location tests", "[void]") {
+/**
+ * location tests
+ */
+TEST_CASE("Location tests", "[Location]") {
   mylibrary::Location loc = {200, 400};
   mylibrary::Location loc_other = {100, 300};
 
